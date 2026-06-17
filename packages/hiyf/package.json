@@ -1,6 +1,6 @@
 {
   "name": "@jackbernnie/hiyf",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "human-in-your-face — a personal, LLM-safe design system. Forked from Polar's Orbit (Apache-2.0).",
   "license": "Apache-2.0",
   "type": "module",
