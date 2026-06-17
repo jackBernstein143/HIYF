@@ -56,12 +56,19 @@ export function Combobox({
   emptyText = "No results found.",
 }: ComboboxProps) {
   // No className/style props by design — the only expressible choices are correct ones.
-  // @base-ui/react Combobox.Root is generic over Value. We fix Value=string so the
-  // public API stays simple. onValueChange wraps the base-ui (val, details) signature
-  // and surfaces only the string value to callers.
+  //
+  // base-ui's Combobox is generic over the item type and drives BOTH live
+  // filtering and the empty state from the `items` prop on Root — rendering
+  // items as static children (the previous approach) left base-ui's collection
+  // empty, so "no results" showed even with options and typing didn't filter.
+  // We keep a simple string-based public API (value = option.value) and
+  // translate to/from the option objects base-ui works in.
+  const isControlled = value !== undefined
+  const selected = options.find((o) => o.value === value) ?? null
+
   const handleValueChange = React.useCallback(
-    (val: string | null) => {
-      if (val != null) onValueChange?.(val)
+    (item: ComboboxOption | null) => {
+      onValueChange?.(item ? item.value : "")
     },
     [onValueChange],
   )
@@ -69,20 +76,21 @@ export function Combobox({
   const inputPlaceholder = searchPlaceholder ?? placeholder
 
   return (
-    <ComboboxPrimitive.Root<string>
-      value={value ?? null}
+    <ComboboxPrimitive.Root<ComboboxOption>
+      items={options}
+      value={isControlled ? selected : undefined}
       onValueChange={onValueChange ? handleValueChange : undefined}
     >
       <ComboboxInput placeholder={inputPlaceholder} showTrigger showClear={false} />
       <ComboboxContent>
+        <ComboboxEmpty>{emptyText}</ComboboxEmpty>
         <ComboboxList>
-          <ComboboxEmpty>{emptyText}</ComboboxEmpty>
-          {options.map((opt) => (
+          {(item: ComboboxOption) => (
             // ComboboxItem from ui/combobox already includes the ItemIndicator.
-            <ComboboxItem key={opt.value} value={opt.value as never}>
-              {opt.label}
+            <ComboboxItem key={item.value} value={item}>
+              {item.label}
             </ComboboxItem>
-          ))}
+          )}
         </ComboboxList>
       </ComboboxContent>
     </ComboboxPrimitive.Root>
