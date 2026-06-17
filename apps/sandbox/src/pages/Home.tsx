@@ -12,6 +12,9 @@ import { CodeBlock, PageShell, Section } from './docKit'
 // lockdown lint guarantees it can't go off-system without failing the build.
 const setupPrompt = `Set up and use the @jackbernnie/hiyf design system in this project.
 
+After installing, read node_modules/@jackbernnie/hiyf/AGENTS.md and follow it — it
+has the complete rules, token vocabulary, and component list. Summary below.
+
 First, install and wire it up:
 1. Install it: run \`npm install @jackbernnie/hiyf\` and
    \`npm install -D hiyf-eslint-config\`. If the package isn't on the

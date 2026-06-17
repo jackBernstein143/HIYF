@@ -42,6 +42,15 @@ Ships compiled JS + types + CSS; works in Vite, Next.js (App Router — `'use cl
 directives are preserved), and any bundler. Full setup: see the repository's
 `USAGE.md`.
 
+## For AI coding agents
+
+This package ships an **`AGENTS.md`** with the complete rules, token vocabulary,
+and component catalog. Point your agent at it:
+
+```
+node_modules/@jackbernnie/hiyf/AGENTS.md
+```
+
 ## Attribution
 
 Forked from Polar's "Orbit" design system (Apache-2.0). See `LICENSE`/`NOTICE`.
