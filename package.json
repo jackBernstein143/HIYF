@@ -1,0 +1,20 @@
+{
+  "name": "design-system",
+  "version": "0.0.0",
+  "private": true,
+  "description": "HIYF (Human In Your Face) — a personal design system, forked from Polar's Orbit (Apache-2.0).",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter sandbox dev",
+    "sandbox": "pnpm --filter sandbox dev",
+    "build:@jackbernnie/hiyf": "pnpm --filter @jackbernnie/hiyf build",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.7.0",
+  "devDependencies": {
+    "eslint": "^9.39.4"
+  }
+}

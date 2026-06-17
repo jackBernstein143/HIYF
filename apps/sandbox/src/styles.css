@@ -1,0 +1,11 @@
+/* Sandbox styling foundation.
+ * The theme itself lives in the design system (@jackbernnie/hiyf/theme.css)
+ * so any consuming app uses the exact same foundation as this sandbox. */
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/inter';
+@import '@jackbernnie/hiyf/theme.css';
+
+/* Scan the design-system source so Tailwind generates the classes it uses. */
+@source '../../../packages/hiyf/src';

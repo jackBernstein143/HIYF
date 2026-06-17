@@ -1,0 +1,12 @@
+This project includes code forked from Polar's "Orbit" design system.
+
+  Original source: https://github.com/polarsource/polar
+    (clients/packages/orbit)
+  Original author:  Polar Software Inc.
+  License:          Apache License 2.0 (see LICENSE)
+
+Background on the original design system:
+  https://polar.sh/blog/orbit-llm-safe-design-system
+
+Modifications have been made for use as a standalone, personal design system.
+The original Apache-2.0 license and this attribution are retained as required.

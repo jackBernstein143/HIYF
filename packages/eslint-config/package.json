@@ -1,0 +1,24 @@
+{
+  "name": "hiyf-eslint-config",
+  "version": "0.1.0",
+  "description": "LLM-safe lockdown ESLint rules for the @jackbernnie/hiyf design system — make off-system UI code fail the build.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "peerDependencies": {
+    "eslint": ">=9"
+  },
+  "dependencies": {
+    "typescript-eslint": "^8.0.0"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "name": "@jackbernnie/hiyf",
+  "version": "0.1.0",
+  "description": "human-in-your-face — a personal, LLM-safe design system. Forked from Polar's Orbit (Apache-2.0).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src/theme.css",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./theme": {
+      "types": "./dist/tokens/tokens.stylex.d.ts",
+      "default": "./dist/tokens/tokens.stylex.js"
+    },
+    "./theme.css": "./src/theme.css",
+    "./styles.css": "./dist/stylex.css",
+    "./*": {
+      "types": "./dist/components/*.d.ts",
+      "default": "./dist/components/*.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && rollup -c && tsc -p tsconfig.build.json && node scripts/fix-directives.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.5.0",
+    "@hugeicons/core-free-icons": "^4.2.0",
+    "@hugeicons/react": "^1.1.6",
+    "@stylexjs/stylex": "^0.18.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^4.4.0",
+    "embla-carousel-react": "^8.6.0",
+    "input-otp": "^1.4.2",
+    "next-themes": "^0.4.6",
+    "radix-ui": "^1.6.0",
+    "react-day-picker": "^10.0.1",
+    "react-resizable-panels": "^4.11.2",
+    "recharts": "^3.8.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.6.0",
+    "vaul": "^1.1.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@stylexjs/rollup-plugin": "0.18.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "rollup": "^4.62.0",
+    "rollup-plugin-esbuild": "^6.2.1",
+    "rollup-plugin-preserve-directives": "^0.4.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  }
+}
