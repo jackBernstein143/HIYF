@@ -109,6 +109,26 @@ const lockdownRules = {
           message:
             'Import the constrained wrapper from @jackbernnie/hiyf, not the raw ui/* primitive underneath it.',
         },
+        {
+          // Icons are standardized on hugeicons (shipped with the design system).
+          // Block every other icon library so a stray import fails the build.
+          group: [
+            'lucide-react',
+            'react-icons',
+            'react-icons/*',
+            '@heroicons/react',
+            '@heroicons/react/*',
+            '@radix-ui/react-icons',
+            '@tabler/icons-react',
+            '@phosphor-icons/react',
+            'phosphor-react',
+            '@fortawesome/*',
+            'feather-icons',
+            'feather-icons-react',
+          ],
+          message:
+            'Icons are standardized on hugeicons. Render with <Icon> from @jackbernnie/hiyf and import glyphs from @jackbernnie/hiyf/icons — do not add another icon library.',
+        },
       ],
     },
   ],
