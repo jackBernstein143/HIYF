@@ -33,8 +33,15 @@ Then build all UI using only this system:
   (e.g. padding="l", gap="m", variant="heading-s", color="muted").
 - Never use raw HTML elements (<div>, <span>, <button>…), arbitrary Tailwind
   values (p-[17px]), or inline style={…}. They fail the build on purpose.
-- If something you need doesn't exist, add it to the design system instead of
-  working around it.
+- If something you need doesn't exist, work through this in order — don't get
+  stuck, and don't expand the design system for a single screen:
+    1. Express it with existing tokens and components if you can.
+    2. If it's clearly reusable, add a token/variant/component to the system.
+    3. If it's a genuine one-off (a dynamic value, a third-party integration,
+       or a single bespoke element), use the escape hatch: put
+       \`// eslint-disable-next-line no-restricted-syntax\` on that one line with
+       a short comment explaining why.
+  List any escape hatches you used at the end so I can review them.
 
 Before you finish, run \`npm run lint\` and \`npm run build\`. If either fails,
 fix the code until both pass. Green lint means the UI is on-system.`
@@ -50,11 +57,14 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
         <Text variant="heading-l" as="h1">
           human-in-your-face
         </Text>
+        <Text variant="body">
+          HIYF is a locked design system for AI-generated interfaces. It gives
+          coding agents enough freedom to build, but not enough freedom to drift.
+        </Text>
         <Text variant="body" color="muted">
-          A component system with the guard rails built in. The only UI you can
-          express is on-system UI — raw elements, arbitrary styles, and one-off
-          colors simply fail the build. That makes it safe to hand to an LLM:
-          give it the rules once and the build keeps it honest.
+          The only UI you can express is on-system UI — raw elements, arbitrary
+          styles, and one-off colors simply fail the build. Give an LLM the rules
+          once and the build keeps it honest.
         </Text>
       </Box>
 
