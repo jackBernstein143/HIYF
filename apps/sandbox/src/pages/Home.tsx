@@ -34,6 +34,9 @@ Then build all UI using only this system:
   (Button, Input, Card, Dialog, Select, Table, …).
 - Use <Box> for layout and <Text> for all text, with token props only
   (e.g. padding="l", gap="m", variant="heading-s", color="muted").
+- Icons: render with <Icon icon={...} /> from @jackbernnie/hiyf and import glyphs
+  from @jackbernnie/hiyf/icons (hugeicons ships with the package). Do NOT add
+  lucide or any other icon library.
 - Never use raw HTML elements (<div>, <span>, <button>…), arbitrary Tailwind
   values (p-[17px]), or inline style={…}. They fail the build on purpose.
 - If something you need doesn't exist, work through this in order — don't get

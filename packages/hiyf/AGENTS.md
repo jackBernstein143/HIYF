@@ -96,6 +96,23 @@ ContextMenu. App shell & data viz: Sidebar, Resizable, Chart.
 
 When unsure of a prop, check the component's TypeScript types — every prop is typed.
 
+## Icons
+
+Icons are standardized on **hugeicons** — they ship with this package. **Do NOT
+add `lucide-react`, `react-icons`, or any other icon library.** Render icons with
+the `Icon` component and import glyphs from the package's `/icons` entry:
+
+```tsx
+import { Icon } from '@jackbernnie/hiyf'
+import { Home01Icon, Search01Icon } from '@jackbernnie/hiyf/icons'
+
+<Icon icon={Home01Icon} />                 // size defaults to s (16px)
+<Icon icon={Search01Icon} size="m" color="muted" />
+```
+
+`size`: `xs s m l xl`. `color` defaults to `current` (inherits text color, so
+icons inside buttons just work); other values: `muted accent success warning danger`.
+
 ## When something you need doesn't exist
 
 Work through this in order. **Don't get stuck, and don't expand the design system

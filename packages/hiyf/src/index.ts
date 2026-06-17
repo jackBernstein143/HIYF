@@ -10,6 +10,12 @@ export type { GridItemProps } from './components/GridItem'
 export type { GridLine, GridPlacement } from './utils/grid'
 export { createText } from './primitives/createText'
 
+// ─── Icons (hugeicons — the system's icon set) ───────────────────────────────
+// Glyphs are re-exported from '@jackbernnie/hiyf/icons'. Use <Icon> to render
+// them; never add lucide or another icon library.
+export { Icon } from './components/Icon'
+export type { IconProps, IconSize, IconColor } from './components/Icon'
+
 // ─── Closed wrappers (HIYF philosophy over the shadcn base) ─────────────────
 // Intent-named, enumerated props; no className/style escape hatch. Each takes the
 // canonical name; the raw shadcn version is intentionally NOT re-exported.

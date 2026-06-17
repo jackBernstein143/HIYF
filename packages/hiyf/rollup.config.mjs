@@ -13,6 +13,7 @@ const external = (id) => !id.startsWith('.') && !path.isAbsolute(id)
 export default {
   input: {
     index: 'src/index.ts',
+    icons: 'src/icons.ts',
     'tokens/tokens.stylex': 'src/tokens/tokens.stylex.ts',
   },
   external,
