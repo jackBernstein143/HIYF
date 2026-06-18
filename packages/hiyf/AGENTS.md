@@ -52,10 +52,10 @@ import { Box, Text } from '@jackbernnie/hiyf'
 
 `<Text>` renders all text. Pick a `variant` (a role), never a raw size.
 
-`Card` already has its own padding — drop content straight in (`<Card padding="md">…`),
-no inner wrapper needed. To make cards fill a row and stretch to equal heights,
-put them in `<Box flexDirection="row" gap="l">` and give each `flexGrow={1}` (sizing
-is the layout's job; the card's padding is fixed).
+`Card` self-pads and **fills its container width** by default — drop content
+straight in (`<Card padding="md">…`), no wrapper needed. For an even row of cards,
+use `Grid` (`gridTemplateColumns="repeat(4, minmax(0, 1fr))"`) or a flex row of
+`flexGrow={1}` slots — the layout controls across-row sizing; the card fills it.
 
 ## Token vocabulary (the entire allowed set)
 
