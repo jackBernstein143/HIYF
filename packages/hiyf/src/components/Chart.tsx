@@ -15,6 +15,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "./ui/chart"
 
@@ -63,6 +65,11 @@ export interface ChartProps {
    * @default 'md'
    */
   height?: "sm" | "md" | "lg"
+  /**
+   * Show a legend mapping each series to its color.
+   * @default true when there is more than one category
+   */
+  legend?: boolean
 }
 
 export function Chart({
@@ -71,7 +78,9 @@ export function Chart({
   index,
   categories,
   height = "md",
+  legend,
 }: ChartProps) {
+  const showLegend = legend ?? categories.length > 1
   const config: ChartConfig = Object.fromEntries(
     categories.map((cat, i) => [
       cat,
@@ -93,6 +102,9 @@ export function Chart({
   const tooltip = (
     <ChartTooltip content={<ChartTooltipContent />} />
   )
+  const legendNode = showLegend ? (
+    <ChartLegend content={<ChartLegendContent />} />
+  ) : null
 
   let chart: React.ReactNode
 
@@ -102,6 +114,7 @@ export function Chart({
         {grid}
         {xAxis}
         {tooltip}
+        {legendNode}
         {categories.map((cat) => (
           <Line
             key={cat}
@@ -120,6 +133,7 @@ export function Chart({
         {grid}
         {xAxis}
         {tooltip}
+        {legendNode}
         {categories.map((cat) => (
           <Bar
             key={cat}
@@ -136,6 +150,7 @@ export function Chart({
         {grid}
         {xAxis}
         {tooltip}
+        {legendNode}
         {categories.map((cat) => (
           <Area
             key={cat}
