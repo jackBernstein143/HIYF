@@ -69,6 +69,10 @@ GROUND RULES
 - Preserve light/dark mode if the app has it (theme both).
 - Work incrementally; keep the app runnable at every step; commit after each screen.
 - When a brand or theme decision is ambiguous, STOP and ask rather than guess.
+- MATCH THE ORIGINAL VISUALLY. If you can drive a browser (Playwright/Puppeteer or
+  a screenshot tool / MCP), screenshot the original screen and your migrated one and
+  compare them — visual parity is the bar, not just a clean build. Judge similarity
+  by eye/VLM (layout, spacing, color, type), not pixel-exactness.
 
 Four phases. Do not skip the approval gate in Phase 3.
 
@@ -81,6 +85,10 @@ PHASE 1 — INVENTORY (report back before changing anything)
   variables / theme config as the source of truth if present. Plus the dominant
   corner radius, spacing rhythm, type scale, shadows, and which icon library/ies.
 - A screen/route list and the recurring component patterns, so we both see scope.
+- A COMPONENT MAP: each recurring source component (button, card, modal, table,
+  nav, form field…) paired with the HIYF component that replaces it and how its
+  props map (e.g. variant → intent, size → size). Migrate THROUGH this map so you
+  substitute real HIYF components instead of inventing markup.
 (Accelerator: github.com/jackBernstein143/HIYF ships tools/extract.mjs —
 \`node extract.mjs <app-dir> --json inv.json\` — and tools/synthesize.mjs, which
 produce the inventory and a draft theme automatically.)
@@ -103,8 +111,10 @@ PHASE 3 — PREVIEW & APPROVE  (HARD STOP: do not begin Phase 4 until I reply "a
   approved hiyf.theme.css.
 - Convert ONE representative page (the most component-dense, or ask me which) to
   HIYF, reusing the approved theme.
-- Run the dev server and show me that page next to the original. Explicitly call
-  out anything you could NOT match exactly, and why.
+- Run the dev server. If you can screenshot, capture the original page and your
+  migrated page and compare them directly; refine layout/spacing/color/type and
+  re-screenshot until they match (a few rounds). Show me both side by side and
+  call out anything you could NOT match exactly, and why.
 - I'll confirm the brand is preserved or flag issues; iterate on the theme/page
   until I say "approved". Touch nothing else yet.
 
@@ -115,8 +125,10 @@ PHASE 4 — MIGRATE THE REST (only after I approve)
 - Turn on the lockdown lint (scope it to converted folders first if the app is large):
     import { defineLockdown } from 'hiyf-eslint-config'
     export default defineLockdown({ icons: '<the sanctioned library>' })
-- After each screen: run \`npm run lint\` and \`npm run build\`, fix until both pass,
-  verify the screen behaves identically, then commit. Green lint = fully on-system.
+- After each screen: if you can screenshot, compare the migrated screen against the
+  original and refine until they match; then run \`npm run lint\` and \`npm run build\`,
+  fix until both pass, verify behavior is identical, and commit. Green lint = fully
+  on-system; visual match = faithfully migrated.
 - When everything is converted, do a final visual pass against the original.
 
 HANDLING GAPS
