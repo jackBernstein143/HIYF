@@ -55,53 +55,82 @@ fix the code until both pass. Green lint means the UI is on-system.`
 
 // Brownfield: adopt the app's existing brand, standardize it, then lock it in.
 // Includes a hard preview-and-approve gate before the full migration.
-const migratePrompt = `Migrate this existing app to the @jackbernnie/hiyf design system WITHOUT changing
-its look. Adopt the app's current brand — just standardize it — then lock it in so
-it can't drift again. Work in four phases and STOP for my approval where noted.
+const migratePrompt = `You are migrating this existing app to the @jackbernnie/hiyf design system.
+Goal: the app looks essentially the SAME — its brand preserved, just standardized
+to one value per design decision — and is fully on-system so it can never drift
+again. This is a re-platforming of the UI layer, NOT a redesign. (Standardizing
+will nudge a few values, e.g. 13px → 12px; that's expected. Anything bigger, ask.)
 
-PHASE 1 — Inventory the current design language. Scan the codebase and report:
-- Colors grouped by role (background, surface/card, text, muted text, border,
-  primary/brand, destructive). Cluster near-duplicates — six nearly-identical grays
-  are really one gray. Treat existing CSS variables / theme config as the source of
-  truth if present.
-- The dominant corner radius, the spacing rhythm, the type scale, shadows.
-- Which icon library (or libraries) the app imports.
+GROUND RULES
+- Preserve behavior exactly: keep every prop, event handler, state, data fetch,
+  route, ARIA attribute, and test. Change how UI is expressed, never what it does.
+- No redesign, no new features. If something seems like it should look different,
+  ask me — don't change it on your own.
+- Preserve light/dark mode if the app has it (theme both).
+- Work incrementally; keep the app runnable at every step; commit after each screen.
+- When a brand or theme decision is ambiguous, STOP and ask rather than guess.
+
+Four phases. Do not skip the approval gate in Phase 3.
+
+PHASE 1 — INVENTORY (report back before changing anything)
+- The current styling approach (Tailwind? CSS modules? styled-components? a kit
+  like MUI/Chakra?) and where styles live.
+- The design language: colors grouped by role (background, surface/card, text,
+  muted text, border, primary/brand, destructive, success/warning), clustering
+  near-duplicates — six near-identical grays are really one gray. Use existing CSS
+  variables / theme config as the source of truth if present. Plus the dominant
+  corner radius, spacing rhythm, type scale, shadows, and which icon library/ies.
+- A screen/route list and the recurring component patterns, so we both see scope.
 (Accelerator: github.com/jackBernstein143/HIYF ships tools/extract.mjs —
 \`node extract.mjs <app-dir> --json inv.json\` — and tools/synthesize.mjs, which
-produce this inventory and a draft theme automatically.)
+produce the inventory and a draft theme automatically.)
 
-PHASE 2 — Propose a standardized theme that PRESERVES the brand. Produce a
-hiyf.theme.css that overrides HIYF's CSS variables (see
-node_modules/@jackbernnie/hiyf/theme-template.css for every knob):
-- One value per color role: --primary (the brand color), --background, --card,
-  --muted, --foreground, --muted-foreground, --border, plus the matching --hiyf-*
-  tokens. Each role collapses to ONE value; never absorb the app's inconsistency.
+PHASE 2 — PROPOSE A BRAND-PRESERVING THEME
+Produce one hiyf.theme.css overriding HIYF's CSS variables (every knob is in
+node_modules/@jackbernnie/hiyf/theme-template.css):
+- ONE value per color role — --primary (the brand color), --background, --card,
+  --muted, --foreground, --muted-foreground, --border, --destructive — plus the
+  matching --hiyf-* tokens, for light AND dark. Never copy the app's inconsistency
+  into the theme; each role collapses to a single value.
 - --radius from the dominant corner radius.
 - Icons: if the app uses ONE coherent icon library, sanction it; if icons are
   scattered across several, standardize on hugeicons.
-Don't invent values — derive them from the app. Walk me through the color-role
-mapping and let me approve or correct it before applying.
+Derive every value from the app — invent nothing. Show me the mapping (each value
+and where it came from) and let me approve or correct it before you apply it.
 
-PHASE 3 — Preview & approve. STOP here for my sign-off. Install @jackbernnie/hiyf
-and hiyf-eslint-config, wire the CSS imports plus my approved hiyf.theme.css, and
-convert ONE representative page to HIYF components. Run the dev server and show me
-that page. I'll confirm the brand is preserved or flag what's off; iterate on the
-theme until I approve. DO NOT migrate the rest yet.
+PHASE 3 — PREVIEW & APPROVE  (HARD STOP: do not begin Phase 4 until I reply "approved")
+- Install @jackbernnie/hiyf + hiyf-eslint-config; wire the CSS imports plus my
+  approved hiyf.theme.css.
+- Convert ONE representative page (the most component-dense, or ask me which) to
+  HIYF, reusing the approved theme.
+- Run the dev server and show me that page next to the original. Explicitly call
+  out anything you could NOT match exactly, and why.
+- I'll confirm the brand is preserved or flag issues; iterate on the theme/page
+  until I say "approved". Touch nothing else yet.
 
-PHASE 4 — Migrate the rest (only after I approve the preview). Convert the app
-screen-by-screen to HIYF components — <Box>/<Text> + components with intent props,
-icons via <Icon> — reusing the approved theme. Read
-node_modules/@jackbernnie/hiyf/AGENTS.md and follow it. Turn on the lockdown lint:
-  import { defineLockdown } from 'hiyf-eslint-config'
-  export default defineLockdown({ icons: '<the sanctioned library>' })
-If the app is large, scope the lint to converted folders first and expand as you go.
-After each screen run \`npm run lint\` and \`npm run build\`; fix until both pass.
-Green lint on a file = it's fully on-system.
+PHASE 4 — MIGRATE THE REST (only after I approve)
+- Convert screen-by-screen: <Box>/<Text> + components with intent props, icons via
+  <Icon>. Read node_modules/@jackbernnie/hiyf/AGENTS.md and follow it for the rules,
+  tokens, and component list.
+- Turn on the lockdown lint (scope it to converted folders first if the app is large):
+    import { defineLockdown } from 'hiyf-eslint-config'
+    export default defineLockdown({ icons: '<the sanctioned library>' })
+- After each screen: run \`npm run lint\` and \`npm run build\`, fix until both pass,
+  verify the screen behaves identically, then commit. Green lint = fully on-system.
+- When everything is converted, do a final visual pass against the original.
 
-Throughout: if a genuinely-needed component is missing, propose adding it to the
-design system; if it's a true one-off, use a single
-\`// eslint-disable-next-line no-restricted-syntax\` with a comment. List any escape
-hatches at the end.`
+HANDLING GAPS
+- App-specific composite UI (a dashboard widget, a settings panel): rebuild it FROM
+  HIYF primitives/components — do not add it to the design system.
+- A genuinely reusable primitive HIYF lacks: propose adding it to the design system.
+- Complex third-party widgets (charts, maps, editors): keep them; wrap their
+  container in HIYF, and if the lint blocks a required raw element use a single
+  \`// eslint-disable-next-line no-restricted-syntax\` with a comment.
+List every escape hatch you used at the end for my review.
+
+DONE WHEN: the app looks essentially identical to before, every screen is on-system
+(lint + build green with the lockdown on), behavior is unchanged, and the only
+escape hatches are ones you listed and I approved.`
 
 type StartPath = 'new' | 'existing'
 
