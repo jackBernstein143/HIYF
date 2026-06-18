@@ -113,8 +113,11 @@ PHASE 3 — PREVIEW & APPROVE  (HARD STOP: do not begin Phase 4 until I reply "a
   HIYF, reusing the approved theme.
 - Run the dev server. If you can screenshot, capture the original page and your
   migrated page and compare them directly; refine layout/spacing/color/type and
-  re-screenshot until they match (a few rounds). Show me both side by side and
-  call out anything you could NOT match exactly, and why.
+  re-screenshot until they match (a few rounds).
+- Build a before/after REVIEW PAGE served at one URL — the original screenshot
+  beside the migrated screen, with a drag-slider overlay to spot differences — and
+  give me that URL. I review everything there in one place; never make me open image
+  files. Call out anything you could NOT match exactly, and why.
 - I'll confirm the brand is preserved or flag issues; iterate on the theme/page
   until I say "approved". Touch nothing else yet.
 
@@ -126,9 +129,11 @@ PHASE 4 — MIGRATE THE REST (only after I approve)
     import { defineLockdown } from 'hiyf-eslint-config'
     export default defineLockdown({ icons: '<the sanctioned library>' })
 - After each screen: if you can screenshot, compare the migrated screen against the
-  original and refine until they match; then run \`npm run lint\` and \`npm run build\`,
-  fix until both pass, verify behavior is identical, and commit. Green lint = fully
-  on-system; visual match = faithfully migrated.
+  original and refine until they match; add the before/after pair to the review page;
+  then run \`npm run lint\` and \`npm run build\`, fix until both pass, verify behavior
+  is identical, and commit. Green lint = fully on-system; visual match = faithfully
+  migrated.
+- Keep the review page current so I can scan every screen's before/after in one place.
 - When everything is converted, do a final visual pass against the original.
 
 HANDLING GAPS
