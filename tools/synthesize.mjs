@@ -51,36 +51,51 @@ function candidates(role) {
 const allResolvable = ['background', 'text', 'border', 'ring', 'other']
   .flatMap((r) => candidates(r))
 
-// ─── brand / primary ──────────────────────────────────────────────────────────
-const review = []
-function pickPrimary() {
-  // 1) an explicit brand/primary/accent CSS var with a resolvable value wins
-  for (const [name, val] of Object.entries(inv.cssVars || {})) {
-    if (/brand|primary|accent/i.test(name) && toRgb(val)) {
-      return { value: val, why: `from existing token ${name}`, confident: true }
-    }
-  }
-  // 2) else the most-used saturated (non-gray) color
-  const saturated = allResolvable.filter((c) => sat(c.rgb) > 0.25).sort((a, b) => b.count - a.count)
-  if (saturated.length) return { value: saturated[0].value, why: 'most-used saturated color', confident: false }
-  return null
-}
-
-// pick by lightness within a role, preferring frequent
+// ─── role inference ─────────────────────────────────────────────────────────
+// Prefer the app's OWN named tokens — they are the truest semantic signal and
+// the heart of the brand. Only fall back to colors observed in markup (often
+// one-off accents/status colors) when no matching token exists.
 const lightest = (arr) => [...arr].sort((a, b) => lum(b.rgb) - lum(a.rgb))[0]
 const darkest = (arr) => [...arr].sort((a, b) => lum(a.rgb) - lum(b.rgb))[0]
+const bg = candidates('background'), text = candidates('text'), border = candidates('border')
 
-const bg = candidates('background')
-const text = candidates('text')
-const border = candidates('border')
+// Per role: which token NAMES qualify, and which suffixes to avoid (so we pick
+// the "base" token, not -soft/-hover/-strong/-2/-3 variants).
+const SPECS = {
+  primary:            { want: /accent|primary|brand/i,                       avoid: /soft|hover|alt|light|dark|inverse|[-_][23]\b/i },
+  background:         { want: /canvas|background|(^|[-_])bg([-_]|$)|page/i,   avoid: /soft|hover|dark|inverse|[-_][23]\b/i },
+  card:               { want: /surface|card|panel/i,                          avoid: /hover|soft|[-_][23]\b/i },
+  muted:              { want: /surface[-_]?[23]|muted|subtle/i,               avoid: /fore|text|ink|fg/i },
+  foreground:         { want: /(^|[-_])ink([-_]|$)|foreground|(^|[-_])fg([-_]|$)|(^|[-_])text([-_]|$)|(^|[-_])black/i, avoid: /muted|subtle|body|soft|inverse|[-_][23]\b/i },
+  'muted-foreground': { want: /muted[-_]?fore|ink[-_]?muted|ink[-_]?subtle|fg[-_]?subtle|text[-_]?muted|secondary/i, avoid: /soft/i },
+  border:             { want: /border|divider|outline/i,                      avoid: /strong|hover|soft/i },
+  destructive:        { want: /error|danger|destructive/i,                    avoid: /soft|hover|bg|background/i },
+}
+function byName(role) {
+  let best = null
+  for (const [name, val] of Object.entries(inv.cssVars || {})) {
+    if (!SPECS[role].want.test(name) || SPECS[role].avoid.test(name) || !toRgb(val)) continue
+    if (!best || name.length < best.name.length) best = { name, value: val } // shorter ⇒ more "base"
+  }
+  return best
+}
+function pick(role, fallback) {
+  const n = byName(role)
+  if (n) return { value: n.value, why: `from ${n.name}`, confident: true }
+  if (fallback?.value) return { value: fallback.value, why: `${fallback.why} — REVIEW`, confident: false }
+  return null
+}
+const fb = (c, why) => (c ? { value: c.value, why } : null)
+const saturated = allResolvable.filter((c) => sat(c.rgb) > 0.25).sort((a, b) => b.count - a.count)[0]
 
-const primary = pickPrimary()
-const background = bg[0]
-const card = bg.find((c) => c.value !== background?.value) || background
-const muted = bg.length > 2 ? bg[2] : card
-const foreground = darkest(text) || null
-const mutedFg = text.length > 1 ? lightest(text.filter((c) => lum(c.rgb) < 0.7)) || text[1] : null
-const borderColor = border[0] || null
+const primary = pick('primary', fb(saturated, 'most-used saturated color'))
+const background = pick('background', fb(bg[0], 'most-used surface'))
+const card = pick('card', fb(bg.find((c) => c.value !== background?.value) || bg[0], 'surface'))
+const muted = pick('muted', fb(bg[2], 'subtle surface'))
+const foreground = pick('foreground', fb(darkest(text), 'darkest text'))
+const mutedFg = pick('muted-foreground', fb(text[1], 'secondary text'))
+const borderColor = pick('border', fb(border[0], 'dominant border'))
+const destructive = pick('destructive', null)
 
 // ─── radius (mechanical) ────────────────────────────────────────────────────────
 const ROUNDED_PX = { rounded: 4, 'rounded-sm': 2, 'rounded-md': 6, 'rounded-lg': 8, 'rounded-xl': 12, 'rounded-2xl': 16, 'rounded-3xl': 24, 'rounded-full': 9999 }
@@ -104,28 +119,28 @@ const iconLib = /standardize on hugeicons/i.test(iconRec) ? 'hugeicons'
 
 // ─── emit theme css ───────────────────────────────────────────────────────────
 const L = []
-const set = (varName, value, note) => {
-  if (!value) { L.push(`  /* ${varName}: <no signal — review> */`); return }
-  L.push(`  ${varName}: ${value};${note ? `  /* ${note} */` : ''}`)
-}
+const setRaw = (v, val, note) => L.push(`  ${v}: ${val};  /* ${note} */`)
+const setRole = (v, p) =>
+  p?.value ? L.push(`  ${v}: ${p.value};  /* ${p.why} */`) : L.push(`  /* ${v}: <no signal — review> */`)
 L.push('/* ── Generated by hiyf-synthesize — DRAFT, review before shipping ──')
 L.push(' * Brand preserved, standardized: each role collapses to one value.')
-L.push(' * Lines marked "review" are best-guess role assignments. */')
+L.push(' * "from --x" = mapped from your own token; "REVIEW" = guessed from markup. */')
 L.push(':root {')
-if (modalRadius !== undefined) set('--radius', `${(modalRadius / 16).toFixed(4).replace(/0+$/, '')}rem`, `dominant radius ${modalRadius}px`)
-set('--primary', primary?.value, primary ? `${primary.why}${primary.confident ? '' : ' — REVIEW'}` : undefined)
-set('--background', background?.value, background ? 'most-used surface — REVIEW' : undefined)
-set('--card', card?.value, 'surface — REVIEW')
-set('--muted', muted?.value, 'subtle surface — REVIEW')
-set('--foreground', foreground?.value, 'darkest text — REVIEW')
-set('--muted-foreground', mutedFg?.value, 'secondary text — REVIEW')
-set('--border', borderColor?.value, 'dominant border — REVIEW')
+if (modalRadius !== undefined) setRaw('--radius', `${(modalRadius / 16).toFixed(4).replace(/0+$/, '')}rem`, `dominant radius ${modalRadius}px`)
+setRole('--primary', primary)
+setRole('--background', background)
+setRole('--card', card)
+setRole('--muted', muted)
+setRole('--foreground', foreground)
+setRole('--muted-foreground', mutedFg)
+setRole('--border', borderColor)
+setRole('--destructive', destructive)
 L.push('')
 L.push('  /* Box/Text primitive layer */')
-if (modalRadius !== undefined) set('--hiyf-radius-m', `${modalRadius}px`, 'aligned to --radius')
-set('--hiyf-bg-card', card?.value, 'REVIEW')
-set('--hiyf-text-primary', foreground?.value, 'REVIEW')
-set('--hiyf-border-card', borderColor?.value, 'REVIEW')
+if (modalRadius !== undefined) setRaw('--hiyf-radius-m', `${modalRadius}px`, 'aligned to --radius')
+setRole('--hiyf-bg-card', card)
+setRole('--hiyf-text-primary', foreground)
+setRole('--hiyf-border-card', borderColor)
 L.push('}')
 writeFileSync(outPath, L.join('\n') + '\n')
 
@@ -138,14 +153,15 @@ line(`  radius   → --radius: ${modalRadius !== undefined ? (modalRadius / 16) 
 line(`  spacing  → app uses: ${spaceVals.slice(0, 8).map((n) => n + 'px').join(', ') || 'n/a'} (HIYF scale kept unless you say otherwise)`)
 line(`  icons    → defineLockdown({ icons: '${iconLib}' })   [${iconRec}]`)
 B('Color roles (PROPOSED — approve or correct)')
-const show = (label, c, extra = '') => line(`  ${label.padEnd(18)} ${c ? c.value : '— no signal —'}${extra}`)
-show('--primary', primary, primary ? `   (${primary.why})` : '')
+const show = (label, p) => line(`  ${label.padEnd(18)} ${(p ? p.value : '— no signal —').padEnd(26)} ${p ? p.why : ''}`)
+show('--primary', primary)
 show('--background', background)
 show('--card', card)
 show('--muted', muted)
 show('--foreground', foreground)
 show('--muted-foreground', mutedFg)
 show('--border', borderColor)
+show('--destructive', destructive)
 B('Next')
 line(`  • wrote ${outPath} — import it after hiyf theme.css/styles.css`)
 line(`  • set eslint: export default defineLockdown({ icons: '${iconLib}' })`)
