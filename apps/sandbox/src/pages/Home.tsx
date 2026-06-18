@@ -115,9 +115,9 @@ PHASE 3 — PREVIEW & APPROVE  (HARD STOP: do not begin Phase 4 until I reply "a
   migrated page and compare them directly; refine layout/spacing/color/type and
   re-screenshot until they match (a few rounds).
 - Build a before/after REVIEW PAGE served at one URL — the original screenshot
-  beside the migrated screen, with a drag-slider overlay to spot differences — and
-  give me that URL. I review everything there in one place; never make me open image
-  files. Call out anything you could NOT match exactly, and why.
+  side-by-side with the migrated screen — and give me that URL. I review everything
+  there in one place; never make me open image files. Call out anything you could
+  NOT match exactly, and why.
 - I'll confirm the brand is preserved or flag issues; iterate on the theme/page
   until I say "approved". Touch nothing else yet.
 
