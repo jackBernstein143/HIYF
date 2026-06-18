@@ -139,12 +139,14 @@ for (const file of walk(target)) {
   for (const re of [HEX, RGB, HSL, OKL]) {
     for (const m of src.matchAll(re)) {
       const val = m[0].toLowerCase().replace(/\s+/g, ' ')
-      const before = src.slice(Math.max(0, m.index - 40), m.index)
+      // The current declaration only — slice back to the nearest ; { } or
+      // newline so a prior property on the same line can't mis-tag the role.
+      const decl = src.slice(0, m.index).split(/[;{}\n]/).pop()
       const role =
-        /background/i.test(before) ? 'background'
-        : /border-color|border:|outline/i.test(before) ? 'border'
-        : /(^|[^-])color\s*:/i.test(before) ? 'text'
-        : /box-shadow|shadow/i.test(before) ? 'other'
+        /box-shadow|shadow/i.test(decl) ? 'other'
+        : /border|outline/i.test(decl) ? 'border'
+        : /background/i.test(decl) ? 'background'
+        : /(^|[^-])color\s*:/i.test(decl) ? 'text'
         : 'other'
       add(colorsByRole[role], val)
     }
