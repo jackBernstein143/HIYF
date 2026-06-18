@@ -1,6 +1,6 @@
 {
   "name": "@jackbernnie/hiyf",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "human-in-your-face — a personal, LLM-safe design system. Forked from Polar's Orbit (Apache-2.0).",
   "license": "Apache-2.0",
   "type": "module",
@@ -16,6 +16,7 @@
   "files": [
     "dist",
     "src/theme.css",
+    "src/theme-template.css",
     "AGENTS.md",
     "LICENSE",
     "NOTICE"
@@ -34,6 +35,7 @@
       "default": "./dist/icons.js"
     },
     "./theme.css": "./src/theme.css",
+    "./theme-template.css": "./src/theme-template.css",
     "./styles.css": "./dist/stylex.css",
     "./*": {
       "types": "./dist/components/*.d.ts",

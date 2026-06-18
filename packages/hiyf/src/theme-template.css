@@ -1,0 +1,98 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * HIYF theme template
+ *
+ * Copy any of these into your app's CSS (after importing @jackbernnie/hiyf/theme.css
+ * and styles.css) and set your own values to RE-SKIN the whole design system.
+ * Every line is optional — unset variables fall back to HIYF's shipped defaults.
+ * No fork, no StyleX plugin.
+ *
+ * Two layers:
+ *   1. Component palette + radius (the shadcn layer) — light in :root, dark in .dark
+ *   2. --hiyf-* primitive tokens (Box / Text spacing, radius, colors, shadow, motion)
+ *
+ * For the brownfield "adopt the app's style" flow, a tool fills these in from the
+ * existing codebase (one gray per role, the modal radius, the spacing rhythm, …).
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Component palette — LIGHT (shadcn layer) ──────────────────────────── */
+  /* --radius: 0.75rem; */
+  /* --background: oklch(1 0 0); */
+  /* --foreground: oklch(0.145 0 0); */
+  /* --card: oklch(1 0 0); */
+  /* --card-foreground: oklch(0.145 0 0); */
+  /* --popover: oklch(1 0 0); */
+  /* --popover-foreground: oklch(0.145 0 0); */
+  /* --primary: oklch(0.205 0 0); */
+  /* --primary-foreground: oklch(0.985 0 0); */
+  /* --secondary: oklch(0.97 0 0); */
+  /* --secondary-foreground: oklch(0.205 0 0); */
+  /* --muted: oklch(0.97 0 0); */
+  /* --muted-foreground: oklch(0.556 0 0); */
+  /* --accent: oklch(0.97 0 0); */
+  /* --accent-foreground: oklch(0.205 0 0); */
+  /* --destructive: oklch(0.577 0.245 27.325); */
+  /* --border: oklch(0.922 0 0); */
+  /* --input: oklch(0.922 0 0); */
+  /* --ring: oklch(0.708 0 0); */
+  /* --chart-1: oklch(0.646 0.222 41.116); */
+  /* --chart-2: oklch(0.6 0.118 184.704); */
+  /* --chart-3: oklch(0.398 0.07 227.392); */
+  /* --chart-4: oklch(0.828 0.189 84.429); */
+  /* --chart-5: oklch(0.769 0.188 70.08); */
+
+  /* ── Primitive tokens — Box / Text (the --hiyf-* layer) ────────────────── */
+
+  /* Spacing — padding / margin / gap */
+  /* --hiyf-space-xs: 4px; */
+  /* --hiyf-space-s: 8px; */
+  /* --hiyf-space-m: 12px; */
+  /* --hiyf-space-l: 16px; */
+  /* --hiyf-space-xl: 24px; */
+  /* --hiyf-space-2xl: 32px; */
+  /* --hiyf-space-3xl: 48px; */
+  /* --hiyf-space-4xl: 64px; */
+  /* --hiyf-space-5xl: 96px; */
+
+  /* Corner radius (Box borderRadius) */
+  /* --hiyf-radius-s: 8px; */
+  /* --hiyf-radius-m: 12px; */
+  /* --hiyf-radius-l: 16px; */
+  /* --hiyf-radius-xl: 32px; */
+
+  /* Surfaces (Box backgroundColor) — a value, or a light-dark(light, dark) pair */
+  /* --hiyf-bg-primary: light-dark(#ffffff, hsl(233, 4%, 3.5%)); */
+  /* --hiyf-bg-secondary: light-dark(oklch(0.985 0.002 247.839), hsl(233, 4%, 6.5%)); */
+  /* --hiyf-bg-card: light-dark(oklch(96.7% 0.003 264.54), hsl(233, 4%, 9.5%)); */
+
+  /* Text colors (Box color) */
+  /* --hiyf-text-primary: light-dark(#000000, #ffffff); */
+  /* --hiyf-text-secondary: light-dark(oklch(0.551 0.027 264.364), oklch(0.599 0.02 279.8)); */
+  /* --hiyf-text-tertiary: light-dark(oklch(0.707 0.022 261.325), hsl(233, 4%, 46%)); */
+
+  /* Borders (Box borderColor) */
+  /* --hiyf-border-primary: light-dark(oklch(0.928 0.006 264.531), hsl(233, 4%, 12%)); */
+  /* --hiyf-border-card: light-dark(oklch(0.928 0.006 264.531), transparent); */
+
+  /* Elevation (Box boxShadow) */
+  /* --hiyf-shadow-s: 0 1px 2px rgba(0, 0, 0, 0.05); */
+  /* --hiyf-shadow-m: 0 0px 15px rgba(0, 0, 0, 0.04), 0 0px 2px rgba(0, 0, 0, 0.06); */
+
+  /* Motion (Box transitionDuration) */
+  /* --hiyf-duration-fast: 120ms; */
+  /* --hiyf-duration-base: 200ms; */
+  /* --hiyf-duration-slow: 320ms; */
+}
+
+.dark {
+  /* ── Component palette — DARK (shadcn layer) ───────────────────────────── */
+  /* --background: oklch(0.145 0 0); */
+  /* --foreground: oklch(0.985 0 0); */
+  /* --card: oklch(0.205 0 0); */
+  /* --primary: oklch(0.922 0 0); */
+  /* --border: oklch(1 0 0 / 10%); */
+  /* … (same keys as :root above) */
+
+  /* Note: the --hiyf-* surface/text/border tokens already carry their own
+   * light/dark via light-dark(), so they usually don't need a .dark block. */
+}

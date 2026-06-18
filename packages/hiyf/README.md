@@ -42,6 +42,28 @@ Ships compiled JS + types + CSS; works in Vite, Next.js (App Router — `'use cl
 directives are preserved), and any bundler. Full setup: see the repository's
 `USAGE.md`.
 
+## Theming (re-skin without forking)
+
+Every token indirects through a stable CSS variable, so you can re-skin the whole
+system from your own CSS — no fork, no StyleX plugin. The shadcn palette/radius
+live in `--radius`/`--primary`/… ; the `Box`/`Text` primitive tokens live in
+`--hiyf-*`. Override any of them:
+
+```css
+@import "@jackbernnie/hiyf/theme.css";
+@import "@jackbernnie/hiyf/styles.css";
+
+:root {
+  --radius: 0.5rem;          /* component corners */
+  --primary: oklch(0.55 0.2 264);
+  --hiyf-space-m: 14px;      /* Box gap/padding="m" everywhere */
+  --hiyf-radius-m: 10px;     /* Box borderRadius="m" */
+}
+```
+
+Defaults are unchanged unless you override. See **`@jackbernnie/hiyf/theme-template.css`**
+for the full list of every overridable variable.
+
 ## For AI coding agents
 
 This package ships an **`AGENTS.md`** with the complete rules, token vocabulary,
