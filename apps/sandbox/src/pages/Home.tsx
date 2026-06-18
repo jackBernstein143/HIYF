@@ -1,4 +1,5 @@
-import { Box, Text, Badge, Button, Alert, Separator } from '@jackbernnie/hiyf'
+import { useState } from 'react'
+import { Box, Text, Badge, Button, Alert, Separator, ToggleGroup } from '@jackbernnie/hiyf'
 import { CodeBlock, PageShell, Section } from './docKit'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -52,7 +53,61 @@ Then build all UI using only this system:
 Before you finish, run \`npm run lint\` and \`npm run build\`. If either fails,
 fix the code until both pass. Green lint means the UI is on-system.`
 
+// Brownfield: adopt the app's existing brand, standardize it, then lock it in.
+// Includes a hard preview-and-approve gate before the full migration.
+const migratePrompt = `Migrate this existing app to the @jackbernnie/hiyf design system WITHOUT changing
+its look. Adopt the app's current brand — just standardize it — then lock it in so
+it can't drift again. Work in four phases and STOP for my approval where noted.
+
+PHASE 1 — Inventory the current design language. Scan the codebase and report:
+- Colors grouped by role (background, surface/card, text, muted text, border,
+  primary/brand, destructive). Cluster near-duplicates — six nearly-identical grays
+  are really one gray. Treat existing CSS variables / theme config as the source of
+  truth if present.
+- The dominant corner radius, the spacing rhythm, the type scale, shadows.
+- Which icon library (or libraries) the app imports.
+(Accelerator: github.com/jackBernstein143/HIYF ships tools/extract.mjs —
+\`node extract.mjs <app-dir> --json inv.json\` — and tools/synthesize.mjs, which
+produce this inventory and a draft theme automatically.)
+
+PHASE 2 — Propose a standardized theme that PRESERVES the brand. Produce a
+hiyf.theme.css that overrides HIYF's CSS variables (see
+node_modules/@jackbernnie/hiyf/theme-template.css for every knob):
+- One value per color role: --primary (the brand color), --background, --card,
+  --muted, --foreground, --muted-foreground, --border, plus the matching --hiyf-*
+  tokens. Each role collapses to ONE value; never absorb the app's inconsistency.
+- --radius from the dominant corner radius.
+- Icons: if the app uses ONE coherent icon library, sanction it; if icons are
+  scattered across several, standardize on hugeicons.
+Don't invent values — derive them from the app. Walk me through the color-role
+mapping and let me approve or correct it before applying.
+
+PHASE 3 — Preview & approve. STOP here for my sign-off. Install @jackbernnie/hiyf
+and hiyf-eslint-config, wire the CSS imports plus my approved hiyf.theme.css, and
+convert ONE representative page to HIYF components. Run the dev server and show me
+that page. I'll confirm the brand is preserved or flag what's off; iterate on the
+theme until I approve. DO NOT migrate the rest yet.
+
+PHASE 4 — Migrate the rest (only after I approve the preview). Convert the app
+screen-by-screen to HIYF components — <Box>/<Text> + components with intent props,
+icons via <Icon> — reusing the approved theme. Read
+node_modules/@jackbernnie/hiyf/AGENTS.md and follow it. Turn on the lockdown lint:
+  import { defineLockdown } from 'hiyf-eslint-config'
+  export default defineLockdown({ icons: '<the sanctioned library>' })
+If the app is large, scope the lint to converted folders first and expand as you go.
+After each screen run \`npm run lint\` and \`npm run build\`; fix until both pass.
+Green lint on a file = it's fully on-system.
+
+Throughout: if a genuinely-needed component is missing, propose adding it to the
+design system; if it's a true one-off, use a single
+\`// eslint-disable-next-line no-restricted-syntax\` with a comment. List any escape
+hatches at the end.`
+
+type StartPath = 'new' | 'existing'
+
 export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
+  const [path, setPath] = useState<StartPath>('new')
+  const isNew = path === 'new'
   return (
     <PageShell>
       {/* Hero */}
@@ -79,18 +134,36 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
       {/* The headline feature: one prompt does everything */}
       <Section
         title="Get started — hand this to your LLM"
-        intro="Copy the prompt below into Claude Code, Codex, or any coding agent. It installs the packages, wires up the theme and the lint, then builds using only approved components — and verifies its own work."
+        intro="Pick your situation, then copy the prompt into Claude Code, Codex, or any coding agent."
       >
         <Box flexDirection="column" gap="m">
-          <CodeBlock label="Setup + usage prompt" code={setupPrompt} />
+          <ToggleGroup
+            type="single"
+            value={path}
+            onValueChange={(v) => v && setPath(v as StartPath)}
+            options={[
+              { value: 'new', label: 'New project' },
+              { value: 'existing', label: 'Clean up an existing app' },
+            ]}
+          />
+          <Text color="muted">
+            {isNew
+              ? 'Greenfield — the agent installs HIYF, wires up the theme + lint, and builds using only approved components, verifying its own work.'
+              : 'Brownfield — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for your approval, then migrates the rest, lint-verified.'}
+          </Text>
+          <CodeBlock
+            label={isNew ? 'Setup + usage prompt' : 'Migration prompt'}
+            code={isNew ? setupPrompt : migratePrompt}
+          />
           <Alert tone="success" title="Why you can trust the result">
             <Text>
-              The prompt ends by running <Text as="code" monospace>npm run lint</Text>{' '}
-              and <Text as="code" monospace>npm run build</Text>. The lockdown lint
-              turns every off-system choice into a build error, so the agent
-              physically can&rsquo;t finish with raw <Text as="code" monospace>&lt;div&gt;</Text>s,
-              arbitrary Tailwind, or inline styles. The worst case is a failed
-              build it has to fix — never a shipped inconsistency.
+              Whichever path, the prompt ends by running{' '}
+              <Text as="code" monospace>npm run lint</Text> and{' '}
+              <Text as="code" monospace>npm run build</Text>. The lockdown lint turns
+              every off-system choice into a build error, so the agent physically
+              can&rsquo;t finish with raw <Text as="code" monospace>&lt;div&gt;</Text>s,
+              arbitrary Tailwind, or inline styles — the worst case is a failed build
+              it has to fix, never a shipped inconsistency.
             </Text>
           </Alert>
         </Box>
