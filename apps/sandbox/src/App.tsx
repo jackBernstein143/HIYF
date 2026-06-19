@@ -259,6 +259,13 @@ export function App() {
           <Foundations />
         ) : current ? (
           <Box flexDirection="column" gap="xl" className="mx-auto w-full max-w-3xl px-10 py-12">
+            <Box flexDirection="column" gap="xs" padding="m" borderRadius="m" className="border border-border bg-muted/40">
+              <Text variant="label">Example design system</Text>
+              <Text variant="caption" color="muted">
+                This gallery is HIYF in its neutral theme — an example of the showcase your
+                project generates, re-themed to your brand.
+              </Text>
+            </Box>
             <Box flexDirection="column" gap="s">
               <Box flexDirection="row" gap="s" className="items-center">
                 <Text variant="heading-s">{current.name}</Text>
