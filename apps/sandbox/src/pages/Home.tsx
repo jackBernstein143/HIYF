@@ -271,16 +271,20 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
           <Box flexDirection="row" className="items-center">
             <Badge tone="neutral">AI design protocol</Badge>
           </Box>
-          <Text variant="heading-l" as="h1" className="max-w-4xl">
-            A design system your coding agent can build on.{' '}
-            <Text as="span" variant="heading-l" color="muted">
-              It can&rsquo;t drift or go off-brand &mdash; the build won&rsquo;t let it.
+          <Box flexDirection="column" className="max-w-4xl">
+            <Text variant="heading-l" as="h1">
+              A design system your coding agent can build on.{' '}
+              <Text as="span" variant="heading-l" color="muted">
+                It can&rsquo;t drift or go off-brand &mdash; the build won&rsquo;t let it.
+              </Text>
             </Text>
-          </Text>
-          <Text variant="body" color="muted" className="max-w-2xl">
-            HIYF is a locked design system where the only UI an LLM can express is on-system
-            UI. Hand your agent one prompt; the lockdown lint keeps every result honest.
-          </Text>
+          </Box>
+          <Box flexDirection="column" className="max-w-2xl">
+            <Text variant="body" color="muted">
+              HIYF is a locked design system where the only UI an LLM can express is on-system
+              UI. Hand your agent one prompt; the lockdown lint keeps every result honest.
+            </Text>
+          </Box>
         </Box>
 
         {/* Set up — the two paths */}
