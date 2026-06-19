@@ -1,17 +1,19 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Badge, Box, Button, Input, Separator, Text } from '@jackbernnie/hiyf'
 import { categories, registry, type Entry } from './showcase/registry'
 import { Home } from './pages/Home'
 import { Foundations } from './pages/Foundations'
+import { Docs } from './pages/Docs'
 
 // Doc pages live alongside the component registry in the same nav. A selection
 // is either one of these page keys or a component name.
-type PageKey = 'home' | 'foundations'
+type PageKey = 'home' | 'docs' | 'foundations'
 const PAGES: { key: PageKey; label: string }[] = [
   { key: 'home', label: 'Home' },
+  { key: 'docs', label: 'Docs' },
   { key: 'foundations', label: 'Foundations' },
 ]
-const isPage = (s: string): s is PageKey => s === 'home' || s === 'foundations'
+const isPage = (s: string): s is PageKey => s === 'home' || s === 'docs' || s === 'foundations'
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Showcase chrome. Built entirely from the design system + Box/Text, so this
@@ -108,6 +110,11 @@ export function App() {
     document.documentElement.classList.toggle('dark', dark)
   }
 
+  // Jump to the top whenever the page/component changes.
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0)
+  }, [selected])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return registry
@@ -123,9 +130,11 @@ export function App() {
   const crumbName =
     page === 'home'
       ? 'Home'
-      : page === 'foundations'
-        ? 'Foundations'
-        : current?.name
+      : page === 'docs'
+        ? 'Docs'
+        : page === 'foundations'
+          ? 'Foundations'
+          : current?.name
 
   // Home is the front door: full-bleed landing, no sidebar — a minimal top nav
   // leads into the docs + the component sandbox.
@@ -153,7 +162,7 @@ export function App() {
             <Text variant="label">HIYF</Text>
           </Box>
           <Box flexDirection="row" gap="xs" className="items-center">
-            <Button intent="ghost" size="sm" onClick={() => select('foundations')}>Docs</Button>
+            <Button intent="ghost" size="sm" onClick={() => select('docs')}>Docs</Button>
             <Button intent="ghost" size="sm" onClick={() => select(firstComponent)}>Components</Button>
             <Button intent="secondary" size="sm" onClick={() => setDark((d) => !d)}>
               {dark ? '☀ Light' : '☾ Dark'}
@@ -174,14 +183,16 @@ export function App() {
         className="sticky top-0 h-screen w-72 shrink-0 overflow-y-auto border-r border-border bg-background"
       >
         <Box flexDirection="column" gap="m" className="px-5 py-5">
-          <Box flexDirection="row" gap="s" className="items-center">
-            <Box className="size-5 items-center justify-center rounded-md bg-primary">
-              <Text variant="label" color="inverse">H</Text>
-            </Box>
-            <Box flexDirection="column" gap="none">
-              <Text variant="label">HIYF</Text>
-              <Text variant="caption" color="muted">{registry.length} components</Text>
-            </Box>
+          <Box
+            as="div"
+            role="button"
+            tabIndex={0}
+            onClick={() => select('home')}
+            flexDirection="row"
+            gap="xs"
+            className="cursor-pointer items-center text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Text variant="label" color="inherit">← Back to home</Text>
           </Box>
           <Input
             placeholder="Search components…"
@@ -243,8 +254,8 @@ export function App() {
           </Button>
         </Box>
 
-        {page === 'home' ? (
-          <Home onNavigate={select} />
+        {page === 'docs' ? (
+          <Docs onNavigate={select} />
         ) : page === 'foundations' ? (
           <Foundations />
         ) : current ? (

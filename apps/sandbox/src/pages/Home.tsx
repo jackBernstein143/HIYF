@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Text, Badge, Button, Alert, ToggleGroup, Icon } from '@jackbernnie/hiyf'
 import { ArrowRight01Icon } from '@jackbernnie/hiyf/icons'
 import { CodeBlock } from './docKit'
@@ -227,9 +227,9 @@ const PROMPT_LABEL: Record<PromptKey, string> = {
 }
 
 const WHY = [
-  { fig: 'FIG 01', title: 'Tokens, not values', body: 'Pick a role — padding="l", variant="heading-s" — and the system picks the pixels.' },
-  { fig: 'FIG 02', title: 'Closed components', body: 'Intent-named props (intent="primary", color="success") with no className escape hatch.' },
-  { fig: 'FIG 03', title: 'Enforced by lint', body: "Off-system code fails the build — so drift can't merge, whoever (or whatever) wrote it." },
+  { title: 'Tokens, not values', body: 'Pick a role — padding="l", variant="heading-s" — and the system picks the pixels.' },
+  { title: 'Closed components', body: 'Intent-named props (intent="primary", color="success") with no className escape hatch.' },
+  { title: 'Enforced by lint', body: "Off-system code fails the build — so drift can't merge, whoever (or whatever) wrote it." },
 ]
 
 function PathCard({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
@@ -258,18 +258,23 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
   const [view, setView] = useState<'landing' | Path>('landing')
   const [newKind, setNewKind] = useState<NewKind>('standard')
 
+  // Reset scroll when moving between the landing and a path's detail view.
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0)
+  }, [view])
+
   if (view === 'landing') {
     return (
-      <Box flexDirection="column" gap="4xl" className="mx-auto w-full max-w-5xl px-10 py-20">
+      <Box flexDirection="column" gap="2xl" className="mx-auto w-full max-w-5xl px-10 py-12">
         {/* Hero — hammer the value prop, two-tone headline */}
         <Box flexDirection="column" gap="l">
           <Box flexDirection="row" className="items-center">
             <Badge tone="neutral">AI design protocol</Badge>
           </Box>
-          <Text variant="heading-2xl" as="h1">
+          <Text variant="heading-l" as="h1" className="max-w-4xl">
             A design system your coding agent can build on.{' '}
-            <Text as="span" variant="heading-2xl" color="muted">
-              It can&rsquo;t drift, can&rsquo;t go off-brand, can&rsquo;t ship inconsistency &mdash; the build won&rsquo;t let it.
+            <Text as="span" variant="heading-l" color="muted">
+              It can&rsquo;t drift or go off-brand &mdash; the build won&rsquo;t let it.
             </Text>
           </Text>
           <Text variant="body" color="muted" className="max-w-2xl">
@@ -299,13 +304,12 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
         <Box flexDirection="row" gap="l" className="flex-wrap">
           {WHY.map((f) => (
             <Box
-              key={f.fig}
+              key={f.title}
               flexDirection="column"
               gap="s"
               flexGrow={1}
               className="min-w-64 basis-0 border-t border-border pt-4"
             >
-              <Text variant="caption" color="muted" monospace>{f.fig}</Text>
               <Text variant="heading-xs">{f.title}</Text>
               <Text color="muted">{f.body}</Text>
             </Box>
