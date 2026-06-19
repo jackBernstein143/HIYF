@@ -149,11 +149,55 @@ DONE WHEN: the app looks essentially identical to before, every screen is on-sys
 (lint + build green with the lockdown on), behavior is unchanged, and the only
 escape hatches are ones you listed and I approved.`
 
-type StartPath = 'new' | 'existing'
+// Reference: copy an existing site/tool's look (a URL or screenshots) onto HIYF —
+// no codebase needed. Extract the design language, standardize it, build on it.
+const referencePrompt = `Build a new project on the @jackbernnie/hiyf AI design protocol, themed to MATCH a
+reference I'll give you — a website URL and/or screenshots. Copy its look, then
+standardize it so it's robust and can't drift.
+
+PHASE 1 — CAPTURE THE REFERENCE'S DESIGN LANGUAGE
+- URL: github.com/jackBernstein143/HIYF ships tools/extract-url.mjs —
+  \`node extract-url.mjs <url> --json inv.json\` reads the site's COMPUTED styles
+  (colors by role, fonts, sizes, radius, spacing, shadows); then
+  \`node synthesize.mjs inv.json --out hiyf.theme.css\` drafts a HIYF theme.
+- Screenshots: study them and extract the same — palette (background, surface, text,
+  muted text, border, primary/brand, destructive), the type family + scale, corner
+  radius, spacing rhythm, shadows.
+Standardize as you capture: ONE value per role; collapse near-duplicates. Show me the
+mapping (each value + where it came from) and let me approve or correct it.
+
+PHASE 2 — APPLY & PREVIEW  (STOP for my approval)
+Install @jackbernnie/hiyf + hiyf-eslint-config; wire the CSS imports + the approved
+hiyf.theme.css. Build ONE representative screen. If you can screenshot, put it on a
+served review page next to the reference (one URL) and refine until the look matches.
+
+PHASE 3 — BUILD
+With the theme approved, build the rest on HIYF — read
+node_modules/@jackbernnie/hiyf/AGENTS.md and follow it; turn on the lockdown lint:
+  import { defineLockdown } from 'hiyf-eslint-config'
+  export default defineLockdown({ icons: 'hugeicons' })
+Everything stays on-system; the look stays the reference's.
+
+Notes: icons default to hugeicons (a URL/screenshot doesn't dictate an icon library).
+The synthesized color roles are a DRAFT — brand color and backgrounds are usually
+right; surface/muted roles sometimes need a tweak, so confirm them with me.\`
+
+type StartPath = 'new' | 'existing' | 'reference'
+
+const BLURB: Record<StartPath, string> = {
+  new: 'Greenfield — the agent installs HIYF, wires up the theme + lint, and builds using only approved components, verifying its own work.',
+  existing: 'Brownfield — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for approval, then migrates the rest, lint-verified.',
+  reference: "Copy a reference — give the agent a website URL or screenshots; it extracts that look into a standardized HIYF theme, previews it, then builds on it.",
+}
+const PROMPT_LABEL: Record<StartPath, string> = {
+  new: 'Setup + usage prompt',
+  existing: 'Migration prompt',
+  reference: 'Reference-copy prompt',
+}
 
 export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
   const [path, setPath] = useState<StartPath>('new')
-  const isNew = path === 'new'
+  const PROMPTS: Record<StartPath, string> = { new: setupPrompt, existing: migratePrompt, reference: referencePrompt }
   return (
     <PageShell>
       {/* Hero */}
@@ -191,17 +235,11 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
             options={[
               { value: 'new', label: 'New project' },
               { value: 'existing', label: 'Clean up an existing app' },
+              { value: 'reference', label: 'Copy a reference' },
             ]}
           />
-          <Text color="muted">
-            {isNew
-              ? 'Greenfield — the agent installs HIYF, wires up the theme + lint, and builds using only approved components, verifying its own work.'
-              : 'Brownfield — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for your approval, then migrates the rest, lint-verified.'}
-          </Text>
-          <CodeBlock
-            label={isNew ? 'Setup + usage prompt' : 'Migration prompt'}
-            code={isNew ? setupPrompt : migratePrompt}
-          />
+          <Text color="muted">{BLURB[path]}</Text>
+          <CodeBlock label={PROMPT_LABEL[path]} code={PROMPTS[path]} />
           <Alert tone="success" title="Why you can trust the result">
             <Text>
               Whichever path, the prompt ends by running{' '}

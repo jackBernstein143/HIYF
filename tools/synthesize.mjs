@@ -86,15 +86,20 @@ function pick(role, fallback) {
   return null
 }
 const fb = (c, why) => (c ? { value: c.value, why } : null)
+// Neutral roles should lean low-saturation (a brand color must never leak into a
+// surface/text/border). Rank by neutrality rather than hard-filtering, so palettes
+// with slightly-hued grays don't collapse to pure black/white.
+const byNeutral = (arr) => [...arr].sort((a, b) => sat(a.rgb) - sat(b.rgb))
+const lightSurfaces = (exclude) => byNeutral(bg.filter((c) => lum(c.rgb) > 0.9 && !exclude.includes(c.value)))
 const saturated = allResolvable.filter((c) => sat(c.rgb) > 0.25).sort((a, b) => b.count - a.count)[0]
 
 const primary = pick('primary', fb(saturated, 'most-used saturated color'))
-const background = pick('background', fb(bg[0], 'most-used surface'))
-const card = pick('card', fb(bg.find((c) => c.value !== background?.value) || bg[0], 'surface'))
-const muted = pick('muted', fb(bg[2], 'subtle surface'))
+const background = pick('background', fb(lightest(bg), 'lightest surface'))
+const card = pick('card', fb(lightSurfaces([background?.value])[0] || bg.find((c) => c.value !== background?.value) || bg[0], 'surface'))
+const muted = pick('muted', fb(lightSurfaces([background?.value, card?.value])[0] || card, 'subtle surface'))
 const foreground = pick('foreground', fb(darkest(text), 'darkest text'))
-const mutedFg = pick('muted-foreground', fb(text[1], 'secondary text'))
-const borderColor = pick('border', fb(border[0], 'dominant border'))
+const mutedFg = pick('muted-foreground', fb(byNeutral(text.filter((c) => lum(c.rgb) > 0.32 && lum(c.rgb) < 0.72))[0] || [...text].filter((c) => c.value !== foreground?.value)[0], 'secondary text'))
+const borderColor = pick('border', fb(byNeutral(border.filter((c) => lum(c.rgb) > 0.5 && lum(c.rgb) < 0.97))[0] || border[0], 'dominant border'))
 const destructive = pick('destructive', null)
 
 // ─── radius (mechanical) ────────────────────────────────────────────────────────
