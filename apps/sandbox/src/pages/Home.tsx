@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Text, Badge, Button, Alert, ToggleGroup, Icon } from '@jackbernnie/hiyf'
+import { Box, Text, Badge, Button, Alert, Icon } from '@jackbernnie/hiyf'
 import { ArrowRight01Icon } from '@jackbernnie/hiyf/icons'
 import { CodeBlock } from './docKit'
 import { HiyfLogo } from '../Logo'
@@ -254,10 +254,11 @@ function PathCard({
       flexGrow={1}
       className="min-w-72 basis-0 cursor-pointer overflow-hidden border border-border bg-card transition-colors hover:border-foreground/40"
     >
-      {/* image banner with the path name overlaid + grain */}
-      <Box className={`relative h-36 overflow-hidden path-banner ${banner}`}>
+      {/* image banner with the path name overlaid + heavy grain */}
+      <Box className="relative h-36 overflow-hidden">
+        <Box className={`banner-img ${banner}`} />
         <Box className="grain" />
-        <Box className="absolute inset-0 bg-black/35" />
+        <Box className="absolute inset-0 bg-black/30" />
         <Box
           flexDirection="row"
           justifyContent="between"
@@ -275,14 +276,37 @@ function PathCard({
   )
 }
 
+function ChoiceCard({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
+  return (
+    <Box
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      flexDirection="column"
+      gap="m"
+      padding="xl"
+      borderRadius="l"
+      flexGrow={1}
+      className="min-w-72 basis-0 cursor-pointer border border-border bg-card transition-colors hover:border-foreground/40 hover:bg-muted/40"
+    >
+      <Box flexDirection="row" justifyContent="between" className="items-center">
+        <Text variant="heading-s">{title}</Text>
+        <Icon icon={ArrowRight01Icon} size="m" color="muted" />
+      </Box>
+      <Text color="muted">{desc}</Text>
+    </Box>
+  )
+}
+
 export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
   const [view, setView] = useState<'landing' | Path>('landing')
-  const [newKind, setNewKind] = useState<NewKind>('standard')
+  // null = the "Start new" interstitial (choose standard vs reference) is showing.
+  const [newKind, setNewKind] = useState<NewKind | null>(null)
 
-  // Reset scroll when moving between the landing and a path's detail view.
+  // Reset scroll on any step change (landing → interstitial → detail).
   useEffect(() => {
     if (typeof window !== 'undefined') window.scrollTo(0, 0)
-  }, [view])
+  }, [view, newKind])
 
   if (view === 'landing') {
     return (
@@ -316,7 +340,10 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
               title="Start new"
               desc="Spin up a fresh design system — a standard template, or modeled after a reference you choose."
               banner="path-banner--new"
-              onClick={() => setView('new')}
+              onClick={() => {
+                setNewKind(null)
+                setView('new')
+              }}
             />
             <PathCard
               title="Adopt in an existing app"
@@ -350,28 +377,54 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
     )
   }
 
-  const key: PromptKey = view === 'existing' ? 'existing' : newKind
+  // "Start new" interstitial — make both sub-paths obvious before any prompt.
+  if (view === 'new' && newKind === null) {
+    return (
+      <Box flexDirection="column" gap="2xl" className="mx-auto w-full max-w-3xl px-10 py-12">
+        <Box flexDirection="row" className="items-center">
+          <Button intent="ghost" size="sm" onClick={() => setView('landing')}>← All paths</Button>
+        </Box>
+        <Box flexDirection="column" gap="s">
+          <Text variant="heading-l" as="h1">Start a new design system</Text>
+          <Text color="muted">Two ways to begin — pick one.</Text>
+        </Box>
+        <Box flexDirection="row" gap="l" className="flex-wrap">
+          <ChoiceCard
+            title="Standard template"
+            desc="Start on HIYF's neutral theme and build right away."
+            onClick={() => setNewKind('standard')}
+          />
+          <ChoiceCard
+            title="Adopt another design system"
+            desc="Model the look of a brand, app, or screenshots — your agent researches it, then themes HIYF to match."
+            onClick={() => setNewKind('reference')}
+          />
+        </Box>
+      </Box>
+    )
+  }
+
+  const key: PromptKey = view === 'existing' ? 'existing' : (newKind ?? 'standard')
+  const detailTitle =
+    view === 'existing'
+      ? 'Adopt HIYF in an existing app'
+      : key === 'reference'
+        ? 'Adopt another design system'
+        : 'Standard template'
   const PROMPTS: Record<PromptKey, string> = { standard: setupPrompt, reference: referencePrompt, existing: migratePrompt }
   return (
     <Box flexDirection="column" gap="2xl" className="mx-auto w-full max-w-3xl px-10 py-12">
       <Box flexDirection="row" className="items-center">
-        <Button intent="ghost" size="sm" onClick={() => setView('landing')}>← All paths</Button>
+        <Button
+          intent="ghost"
+          size="sm"
+          onClick={() => (view === 'existing' ? setView('landing') : setNewKind(null))}
+        >
+          {view === 'existing' ? '← All paths' : '← Choose a starting point'}
+        </Button>
       </Box>
       <Box flexDirection="column" gap="m">
-        <Text variant="heading-l" as="h1">
-          {view === 'new' ? 'Start a new design system' : 'Adopt HIYF in an existing app'}
-        </Text>
-        {view === 'new' && (
-          <ToggleGroup
-            type="single"
-            value={newKind}
-            onValueChange={(v) => v && setNewKind(v as NewKind)}
-            options={[
-              { value: 'standard', label: 'Standard template' },
-              { value: 'reference', label: 'Model after a reference' },
-            ]}
-          />
-        )}
+        <Text variant="heading-l" as="h1">{detailTitle}</Text>
         <Text color="muted">{BLURB[key]}</Text>
         <Text variant="caption" color="muted">Copy this into Claude Code, Codex, or any coding agent.</Text>
         <CodeBlock label={PROMPT_LABEL[key]} code={PROMPTS[key]} />

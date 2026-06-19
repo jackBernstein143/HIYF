@@ -14,9 +14,15 @@
  * Decorative imagery for the two paths, set as backgrounds (cover) so a title
  * can be overlaid and a grain layer applied. Class names only — no inline styles
  * or arbitrary values, so the page still passes the lockdown lint. */
-.path-banner {
+/* The image, heavily blurred + saturated, becomes a soft color field — a
+ * mesh-gradient-like base derived from the photo's own colors. */
+.banner-img {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
+  filter: saturate(1.7) contrast(1.1) blur(18px);
+  transform: scale(1.45);
 }
 .path-banner--new {
   background-image: url('./assets/sunflower-1.webp');
@@ -25,14 +31,17 @@
   background-image: url('./assets/sunflower-2.webp');
 }
 
-/* Film-grain overlay — a subtle, slightly pixelated texture over imagery. */
+/* Heavy grain: two stacked noise layers turn the color field into an abstract,
+ * grainy texture. */
 .grain {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.85;
   mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 140px 140px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+  background-size: 220px 220px, 90px 90px;
   image-rendering: pixelated;
 }
