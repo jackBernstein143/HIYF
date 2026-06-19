@@ -8,6 +8,18 @@ import { CodeBlock, PageShell, Section } from './docKit'
  * the lockdown lint).
  * ────────────────────────────────────────────────────────────────────────── */
 
+// Shared closing step for every path: render the user's OWN design system locally so
+// they can see it and iterate — the payoff that closes the loop (no backend needed).
+const showcaseStep = `
+
+SHOWCASE & ITERATE  (the payoff — do this last)
+- Scaffold a local /showcase page, served at ONE url, that renders MY design system in my
+  theme: the palette as labeled swatches, the type scale, radius + spacing, and a
+  representative component set (Button intents, Card, Input/Field, Select, Status/Badge/
+  Alert, Table, Tabs, a Dialog). Build it only from @jackbernnie/hiyf so it stays lint-clean.
+- Give me that url. I review my design system there and tell you what to change; iterate
+  with me until I'm happy — the lockdown keeps every change on-system.`
+
 // One prompt to rule it all: hand this to an agentic coding LLM (Claude Code,
 // Codex, …) and it installs, wires up, uses, and self-verifies the system. The
 // lockdown lint guarantees it can't go off-system without failing the build.
@@ -51,7 +63,7 @@ Then build all UI using only this system:
   List any escape hatches you used at the end so I can review them.
 
 Before you finish, run \`npm run lint\` and \`npm run build\`. If either fails,
-fix the code until both pass. Green lint means the UI is on-system.`
+fix the code until both pass. Green lint means the UI is on-system.${showcaseStep}`
 
 // Brownfield: adopt the app's existing brand, standardize it, then lock it in.
 // Includes a hard preview-and-approve gate before the full migration.
@@ -143,7 +155,7 @@ HANDLING GAPS
 - Complex third-party widgets (charts, maps, editors): keep them; wrap their
   container in HIYF, and if the lint blocks a required raw element use a single
   \`// eslint-disable-next-line no-restricted-syntax\` with a comment.
-List every escape hatch you used at the end for my review.
+List every escape hatch you used at the end for my review.${showcaseStep}
 
 DONE WHEN: the app looks essentially identical to before, every screen is on-system
 (lint + build green with the lockdown on), behavior is unchanged, and the only
@@ -193,27 +205,31 @@ Build the rest on HIYF — read node_modules/@jackbernnie/hiyf/AGENTS.md and fol
 turn on the lockdown lint:
   import { defineLockdown } from 'hiyf-eslint-config'
   export default defineLockdown({ icons: 'hugeicons' })
-Everything stays on-system; the look stays the reference's.
+Everything stays on-system; the look stays the reference's.${showcaseStep}
 
 Notes: icons default to hugeicons. The researched color roles are a DRAFT — brand color
 and backgrounds are usually right; surface/muted sometimes need a tweak, so confirm with me.`
 
-type StartPath = 'new' | 'existing' | 'reference'
+type Path = 'new' | 'existing'
+type NewKind = 'standard' | 'reference'
+type PromptKey = 'standard' | 'reference' | 'existing'
 
-const BLURB: Record<StartPath, string> = {
-  new: 'Greenfield — the agent installs HIYF, wires up the theme + lint, and builds using only approved components, verifying its own work.',
-  existing: 'Brownfield — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for approval, then migrates the rest, lint-verified.',
-  reference: "Copy a reference — your coding agent asks what to model after (a URL, images, or just a name), researches the real design language itself (not just the landing page), proposes a standardized theme, then builds. No API key — it all runs on your agent.",
+const BLURB: Record<PromptKey, string> = {
+  standard: 'Start fresh on the standard HIYF theme — the agent installs HIYF, wires the theme + lockdown lint, builds only from approved components, and ends by rendering a local showcase of your design system to review.',
+  reference: "Model your design system after a reference — your coding agent asks what to model after (a URL, images, or a name), researches the real design language itself (not just the landing page), proposes a standardized theme, builds, and renders a local showcase. Runs entirely on your agent — no API key.",
+  existing: 'Adopt HIYF in an existing app — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for approval, migrates the rest (before/after verified), and renders your standardized system for review.',
 }
-const PROMPT_LABEL: Record<StartPath, string> = {
-  new: 'Setup + usage prompt',
-  existing: 'Migration prompt',
+const PROMPT_LABEL: Record<PromptKey, string> = {
+  standard: 'New-project prompt',
   reference: 'Reference-copy prompt',
+  existing: 'Migration prompt',
 }
 
 export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
-  const [path, setPath] = useState<StartPath>('new')
-  const PROMPTS: Record<StartPath, string> = { new: setupPrompt, existing: migratePrompt, reference: referencePrompt }
+  const [path, setPath] = useState<Path>('new')
+  const [newKind, setNewKind] = useState<NewKind>('standard')
+  const key: PromptKey = path === 'existing' ? 'existing' : newKind
+  const PROMPTS: Record<PromptKey, string> = { standard: setupPrompt, reference: referencePrompt, existing: migratePrompt }
   return (
     <PageShell>
       {/* Hero */}
@@ -247,15 +263,25 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
           <ToggleGroup
             type="single"
             value={path}
-            onValueChange={(v) => v && setPath(v as StartPath)}
+            onValueChange={(v) => v && setPath(v as Path)}
             options={[
-              { value: 'new', label: 'New project' },
-              { value: 'existing', label: 'Clean up an existing app' },
-              { value: 'reference', label: 'Copy a reference' },
+              { value: 'new', label: 'Start new' },
+              { value: 'existing', label: 'Adopt in existing app' },
             ]}
           />
-          <Text color="muted">{BLURB[path]}</Text>
-          <CodeBlock label={PROMPT_LABEL[path]} code={PROMPTS[path]} />
+          {path === 'new' && (
+            <ToggleGroup
+              type="single"
+              value={newKind}
+              onValueChange={(v) => v && setNewKind(v as NewKind)}
+              options={[
+                { value: 'standard', label: 'Standard template' },
+                { value: 'reference', label: 'Model after a reference' },
+              ]}
+            />
+          )}
+          <Text color="muted">{BLURB[key]}</Text>
+          <CodeBlock label={PROMPT_LABEL[key]} code={PROMPTS[key]} />
           <Alert tone="success" title="Why you can trust the result">
             <Text>
               Whichever path, the prompt ends by running{' '}
