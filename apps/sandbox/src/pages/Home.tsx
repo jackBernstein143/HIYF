@@ -266,7 +266,7 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
 
   if (view === 'landing') {
     return (
-      <Box flexDirection="column" gap="2xl" className="mx-auto w-full max-w-5xl px-10 py-12">
+      <Box flexDirection="column" gap="4xl" className="mx-auto w-full max-w-5xl px-10 py-12">
         {/* Hero */}
         <Box flexDirection="column" gap="m">
           {/* logo + wordmark lockup */}
@@ -316,7 +316,7 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
                 flexGrow={1}
                 className="min-w-64 basis-0 border-t border-border pt-4"
               >
-                <Text variant="heading-s" color="accent">{i + 1}</Text>
+                <Text variant="caption" color="muted" monospace>{i + 1}</Text>
                 <Text variant="heading-xs">{s.title}</Text>
                 <Text color="muted">{s.body}</Text>
               </Box>
