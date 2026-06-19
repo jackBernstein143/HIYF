@@ -1,11 +1,18 @@
 /* The HIYF brand mark. Inlined as an SVG (svg/path are not raw "host" elements
- * the lockdown forbids), so it renders crisply at any size and passes the lint. */
-export function HiyfLogo({ size = 24 }: { size?: number }) {
+ * the lockdown forbids), so it renders crisply at any size and passes the lint.
+ *
+ * The source art sits inside a 1775×1775 canvas with large transparent padding,
+ * so we crop the viewBox to the mark's bounding box and size by HEIGHT (the mark
+ * is portrait) — that way `height` matches the adjacent text's height. */
+const VB = { x: 267, y: 180, w: 1117, h: 1416 }
+
+export function HiyfLogo({ height = 28 }: { height?: number }) {
+  const width = Math.round((height * VB.w) / VB.h)
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 1775 1775"
+      width={width}
+      height={height}
+      viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"

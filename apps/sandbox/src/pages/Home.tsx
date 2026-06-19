@@ -227,10 +227,10 @@ const PROMPT_LABEL: Record<PromptKey, string> = {
   existing: 'Migration prompt',
 }
 
-const WHY = [
-  { title: 'Tokens, not values', body: 'Pick a role — padding="l", variant="heading-s" — and the system picks the pixels.' },
-  { title: 'Closed components', body: 'Intent-named props (intent="primary", color="success") with no className escape hatch.' },
-  { title: 'Enforced by lint', body: "Off-system code fails the build — so drift can't merge, whoever (or whatever) wrote it." },
+const STEPS = [
+  { title: 'Pick a path, copy the prompt', body: 'Choose "start new" or "adopt an existing app", then copy the generated prompt.' },
+  { title: 'Hand it to your coding agent', body: 'Paste it into Claude Code, Codex, Cursor, or any agent. It asks a question or two, then builds.' },
+  { title: 'Review your design system', body: "It scaffolds a showcase of your themed components and keeps everything on-system — iterate until it's right." },
 ]
 
 function PathCard({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
@@ -271,24 +271,18 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
         <Box flexDirection="column" gap="m">
           {/* logo + wordmark lockup */}
           <Box flexDirection="row" gap="m" className="items-center">
-            <HiyfLogo size={48} />
+            <HiyfLogo height={72} />
             <Text variant="heading-xl" as="h1">human in your face</Text>
           </Box>
           <Box flexDirection="row" className="items-center">
             <Badge tone="neutral">AI design protocol</Badge>
           </Box>
           <Box flexDirection="column" className="max-w-4xl">
-            <Text variant="heading-m">
+            <Text variant="heading-l">
               A design system your coding agent can build on.{' '}
-              <Text as="span" variant="heading-m" color="muted">
+              <Text as="span" variant="heading-l" color="muted">
                 It can&rsquo;t drift or go off-brand &mdash; the build won&rsquo;t let it.
               </Text>
-            </Text>
-          </Box>
-          <Box flexDirection="column" className="max-w-2xl">
-            <Text variant="body" color="muted">
-              HIYF is a locked design system where the only UI an LLM can express is on-system
-              UI. Hand your agent one prompt; the lockdown lint keeps every result honest.
             </Text>
           </Box>
         </Box>
@@ -310,20 +304,24 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
           </Box>
         </Box>
 
-        {/* Why it works */}
-        <Box flexDirection="row" gap="l" className="flex-wrap">
-          {WHY.map((f) => (
-            <Box
-              key={f.title}
-              flexDirection="column"
-              gap="s"
-              flexGrow={1}
-              className="min-w-64 basis-0 border-t border-border pt-4"
-            >
-              <Text variant="heading-xs">{f.title}</Text>
-              <Text color="muted">{f.body}</Text>
-            </Box>
-          ))}
+        {/* How it works */}
+        <Box flexDirection="column" gap="l">
+          <Text variant="label" color="muted">HOW IT WORKS</Text>
+          <Box flexDirection="row" gap="l" className="flex-wrap">
+            {STEPS.map((s, i) => (
+              <Box
+                key={s.title}
+                flexDirection="column"
+                gap="s"
+                flexGrow={1}
+                className="min-w-64 basis-0 border-t border-border pt-4"
+              >
+                <Text variant="heading-s" color="accent">{i + 1}</Text>
+                <Text variant="heading-xs">{s.title}</Text>
+                <Text color="muted">{s.body}</Text>
+              </Box>
+            ))}
+          </Box>
         </Box>
       </Box>
     )

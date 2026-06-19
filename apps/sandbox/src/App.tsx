@@ -157,7 +157,7 @@ export function App() {
             gap="s"
             className="cursor-pointer items-center"
           >
-            <HiyfLogo size={26} />
+            <HiyfLogo height={22} />
             <Text variant="label">HIYF</Text>
           </Box>
           <Box flexDirection="row" gap="xs" className="items-center">
