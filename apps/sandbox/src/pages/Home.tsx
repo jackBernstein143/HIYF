@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Box, Text, Badge, Button, Alert, Separator, ToggleGroup } from '@jackbernnie/hiyf'
-import { CodeBlock, PageShell, Section } from './docKit'
+import { Box, Text, Badge, Button, Alert, ToggleGroup, Icon } from '@jackbernnie/hiyf'
+import { ArrowRight01Icon } from '@jackbernnie/hiyf/icons'
+import { CodeBlock } from './docKit'
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Home — what this is and how to use it. Built entirely from the design system,
@@ -225,129 +226,132 @@ const PROMPT_LABEL: Record<PromptKey, string> = {
   existing: 'Migration prompt',
 }
 
+const WHY = [
+  { fig: 'FIG 01', title: 'Tokens, not values', body: 'Pick a role — padding="l", variant="heading-s" — and the system picks the pixels.' },
+  { fig: 'FIG 02', title: 'Closed components', body: 'Intent-named props (intent="primary", color="success") with no className escape hatch.' },
+  { fig: 'FIG 03', title: 'Enforced by lint', body: "Off-system code fails the build — so drift can't merge, whoever (or whatever) wrote it." },
+]
+
+function PathCard({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
+  return (
+    <Box
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      flexDirection="column"
+      gap="m"
+      padding="xl"
+      borderRadius="l"
+      flexGrow={1}
+      className="min-w-72 basis-0 cursor-pointer border border-border bg-card transition-colors hover:border-foreground/30 hover:bg-muted/40"
+    >
+      <Box flexDirection="row" justifyContent="between" className="items-center">
+        <Text variant="heading-s">{title}</Text>
+        <Icon icon={ArrowRight01Icon} size="m" color="muted" />
+      </Box>
+      <Text color="muted">{desc}</Text>
+    </Box>
+  )
+}
+
 export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
-  const [path, setPath] = useState<Path>('new')
+  const [view, setView] = useState<'landing' | Path>('landing')
   const [newKind, setNewKind] = useState<NewKind>('standard')
-  const key: PromptKey = path === 'existing' ? 'existing' : newKind
+
+  if (view === 'landing') {
+    return (
+      <Box flexDirection="column" gap="4xl" className="mx-auto w-full max-w-5xl px-10 py-20">
+        {/* Hero — hammer the value prop, two-tone headline */}
+        <Box flexDirection="column" gap="l">
+          <Box flexDirection="row" className="items-center">
+            <Badge tone="neutral">AI design protocol</Badge>
+          </Box>
+          <Text variant="heading-2xl" as="h1">
+            A design system your coding agent can build on.{' '}
+            <Text as="span" variant="heading-2xl" color="muted">
+              It can&rsquo;t drift, can&rsquo;t go off-brand, can&rsquo;t ship inconsistency &mdash; the build won&rsquo;t let it.
+            </Text>
+          </Text>
+          <Text variant="body" color="muted" className="max-w-2xl">
+            HIYF is a locked design system where the only UI an LLM can express is on-system
+            UI. Hand your agent one prompt; the lockdown lint keeps every result honest.
+          </Text>
+        </Box>
+
+        {/* Set up — the two paths */}
+        <Box flexDirection="column" gap="l">
+          <Text variant="label" color="muted">SET UP YOUR DESIGN SYSTEM</Text>
+          <Box flexDirection="row" gap="l" className="flex-wrap">
+            <PathCard
+              title="Start new"
+              desc="Spin up a fresh design system — a standard template, or modeled after a reference you choose."
+              onClick={() => setView('new')}
+            />
+            <PathCard
+              title="Adopt in an existing app"
+              desc="Bring HIYF into an app you already have — preserve its brand, standardize it, lock out drift."
+              onClick={() => setView('existing')}
+            />
+          </Box>
+        </Box>
+
+        {/* Why it works */}
+        <Box flexDirection="row" gap="l" className="flex-wrap">
+          {WHY.map((f) => (
+            <Box
+              key={f.fig}
+              flexDirection="column"
+              gap="s"
+              flexGrow={1}
+              className="min-w-64 basis-0 border-t border-border pt-4"
+            >
+              <Text variant="caption" color="muted" monospace>{f.fig}</Text>
+              <Text variant="heading-xs">{f.title}</Text>
+              <Text color="muted">{f.body}</Text>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    )
+  }
+
+  const key: PromptKey = view === 'existing' ? 'existing' : newKind
   const PROMPTS: Record<PromptKey, string> = { standard: setupPrompt, reference: referencePrompt, existing: migratePrompt }
   return (
-    <PageShell>
-      {/* Hero */}
-      <Box flexDirection="column" gap="m">
-        <Box flexDirection="row" gap="s" className="items-center">
-          <Badge tone="neutral">AI design protocol</Badge>
-        </Box>
-        <Text variant="heading-l" as="h1">
-          human-in-your-face
-        </Text>
-        <Text variant="body">
-          HIYF is an AI design protocol — a locked design system for AI-generated
-          interfaces. It gives coding agents enough freedom to build, but not enough
-          freedom to drift.
-        </Text>
-        <Text variant="body" color="muted">
-          The only UI you can express is on-system UI — raw elements, arbitrary
-          styles, and one-off colors simply fail the build. Give an LLM the rules
-          once and the build keeps it honest.
-        </Text>
+    <Box flexDirection="column" gap="2xl" className="mx-auto w-full max-w-3xl px-10 py-12">
+      <Box flexDirection="row" className="items-center">
+        <Button intent="ghost" size="sm" onClick={() => setView('landing')}>← All paths</Button>
       </Box>
-
-      <Separator spacing="sm" />
-
-      {/* The headline feature: one prompt does everything */}
-      <Section
-        title="Get started — hand this to your LLM"
-        intro="Pick your situation, then copy the prompt into Claude Code, Codex, or any coding agent."
-      >
-        <Box flexDirection="column" gap="m">
+      <Box flexDirection="column" gap="m">
+        <Text variant="heading-l" as="h1">
+          {view === 'new' ? 'Start a new design system' : 'Adopt HIYF in an existing app'}
+        </Text>
+        {view === 'new' && (
           <ToggleGroup
             type="single"
-            value={path}
-            onValueChange={(v) => v && setPath(v as Path)}
+            value={newKind}
+            onValueChange={(v) => v && setNewKind(v as NewKind)}
             options={[
-              { value: 'new', label: 'Start new' },
-              { value: 'existing', label: 'Adopt in existing app' },
+              { value: 'standard', label: 'Standard template' },
+              { value: 'reference', label: 'Model after a reference' },
             ]}
           />
-          {path === 'new' && (
-            <ToggleGroup
-              type="single"
-              value={newKind}
-              onValueChange={(v) => v && setNewKind(v as NewKind)}
-              options={[
-                { value: 'standard', label: 'Standard template' },
-                { value: 'reference', label: 'Model after a reference' },
-              ]}
-            />
-          )}
-          <Text color="muted">{BLURB[key]}</Text>
-          <CodeBlock label={PROMPT_LABEL[key]} code={PROMPTS[key]} />
-          <Alert tone="success" title="Why you can trust the result">
-            <Text>
-              Whichever path, the prompt ends by running{' '}
-              <Text as="code" monospace>npm run lint</Text> and{' '}
-              <Text as="code" monospace>npm run build</Text>. The lockdown lint turns
-              every off-system choice into a build error, so the agent physically
-              can&rsquo;t finish with raw <Text as="code" monospace>&lt;div&gt;</Text>s,
-              arbitrary Tailwind, or inline styles — the worst case is a failed build
-              it has to fix, never a shipped inconsistency.
-            </Text>
-          </Alert>
-        </Box>
-      </Section>
-
-      {/* How it works — short */}
-      <Section title="How it works">
-        <Box as="ul" flexDirection="column" gap="s">
-          <Box as="li">
-            <Text>
-              <Text as="strong">Tokens, not values.</Text>{' '}
-              <Text as="span" color="muted">
-                You pick a role (padding="l", variant="heading-s"); the system
-                picks the pixels.
-              </Text>
-            </Text>
-          </Box>
-          <Box as="li">
-            <Text>
-              <Text as="strong">Closed components.</Text>{' '}
-              <Text as="span" color="muted">
-                Intent-named props (intent="primary", color="success") with no
-                className escape hatch.
-              </Text>
-            </Text>
-          </Box>
-          <Box as="li">
-            <Text>
-              <Text as="strong">Enforced by lint.</Text>{' '}
-              <Text as="span" color="muted">
-                Off-system code fails the build — so drift can&rsquo;t merge,
-                whoever (or whatever) wrote it.
-              </Text>
-            </Text>
-          </Box>
-        </Box>
-      </Section>
-
-      {/* Pointers */}
-      <Section
-        title="See what you get"
-        intro="Every token is documented on the Foundations page; every closed component has a live demo with copyable code."
-      >
-        <Box flexDirection="row" gap="s" className="flex-wrap items-center">
-          <Button intent="primary" onClick={() => onNavigate('foundations')}>
-            Explore the tokens
-          </Button>
-          <Button intent="secondary" onClick={() => onNavigate('Button')}>
-            Browse components
-          </Button>
-        </Box>
-        <Text variant="caption" color="muted">
-          Prefer to wire it up by hand? The full manual setup lives in USAGE.md.
-          Styles ship precompiled, so there&rsquo;s no StyleX or bundler plugin
-          to configure — just two CSS imports.
-        </Text>
-      </Section>
-    </PageShell>
+        )}
+        <Text color="muted">{BLURB[key]}</Text>
+        <Text variant="caption" color="muted">Copy this into Claude Code, Codex, or any coding agent.</Text>
+        <CodeBlock label={PROMPT_LABEL[key]} code={PROMPTS[key]} />
+        <Alert tone="success" title="Why you can trust the result">
+          <Text>
+            Whichever path, the prompt ends by running{' '}
+            <Text as="code" monospace>npm run lint</Text> and{' '}
+            <Text as="code" monospace>npm run build</Text>. The lockdown lint turns
+            every off-system choice into a build error, so the agent physically
+            can&rsquo;t finish with raw <Text as="code" monospace>&lt;div&gt;</Text>s,
+            arbitrary Tailwind, or inline styles — the worst case is a failed build
+            it has to fix, never a shipped inconsistency.
+          </Text>
+        </Alert>
+      </Box>
+    </Box>
   )
 }

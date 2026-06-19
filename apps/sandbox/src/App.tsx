@@ -127,6 +127,44 @@ export function App() {
         ? 'Foundations'
         : current?.name
 
+  // Home is the front door: full-bleed landing, no sidebar — a minimal top nav
+  // leads into the docs + the component sandbox.
+  if (page === 'home') {
+    const firstComponent = registry[0]?.name ?? 'foundations'
+    return (
+      <Box flexDirection="column" className="min-h-screen bg-background">
+        <Box
+          as="header"
+          flexDirection="row"
+          className="sticky top-0 z-20 items-center justify-between border-b border-border bg-background/80 px-10 py-4 backdrop-blur"
+        >
+          <Box
+            as="div"
+            role="button"
+            tabIndex={0}
+            onClick={() => select('home')}
+            flexDirection="row"
+            gap="s"
+            className="cursor-pointer items-center"
+          >
+            <Box className="size-5 items-center justify-center rounded-md bg-primary">
+              <Text variant="label" color="inverse">H</Text>
+            </Box>
+            <Text variant="label">HIYF</Text>
+          </Box>
+          <Box flexDirection="row" gap="xs" className="items-center">
+            <Button intent="ghost" size="sm" onClick={() => select('foundations')}>Docs</Button>
+            <Button intent="ghost" size="sm" onClick={() => select(firstComponent)}>Components</Button>
+            <Button intent="secondary" size="sm" onClick={() => setDark((d) => !d)}>
+              {dark ? '☀ Light' : '☾ Dark'}
+            </Button>
+          </Box>
+        </Box>
+        <Home onNavigate={select} />
+      </Box>
+    )
+  }
+
   return (
     <Box flexDirection="row" className="min-h-screen bg-background">
       {/* Sidebar */}
