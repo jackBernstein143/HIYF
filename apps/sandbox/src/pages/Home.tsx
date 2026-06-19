@@ -180,7 +180,7 @@ Everything stays on-system; the look stays the reference's.
 
 Notes: icons default to hugeicons (a URL/screenshot doesn't dictate an icon library).
 The synthesized color roles are a DRAFT — brand color and backgrounds are usually
-right; surface/muted roles sometimes need a tweak, so confirm them with me.\`
+right; surface/muted roles sometimes need a tweak, so confirm them with me.`
 
 type StartPath = 'new' | 'existing' | 'reference'
 
