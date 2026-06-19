@@ -6,21 +6,86 @@ import { Foundations } from './pages/Foundations'
 import { Docs } from './pages/Docs'
 import { HiyfLogo } from './Logo'
 
-// Doc pages live alongside the component registry in the same nav. A selection
-// is either one of these page keys or a component name.
-type PageKey = 'home' | 'docs' | 'foundations'
-const PAGES: { key: PageKey; label: string }[] = [
-  { key: 'home', label: 'Home' },
-  { key: 'docs', label: 'Docs' },
+// Three surfaces:
+//  • 'home'  — the website landing (standalone, top nav)
+//  • 'docs'  — the documentation (standalone, top nav, lives on its own)
+//  • the EXAMPLE PROJECT (a sample HIYF design system) — its own left sidebar:
+//      'example' (the About/Overview tab) + 'foundations' + every component.
+type PageKey = 'home' | 'docs' | 'example' | 'foundations'
+// Only these appear in the example project's sidebar.
+const SIDEBAR_PAGES: { key: PageKey; label: string }[] = [
+  { key: 'example', label: 'Overview' },
   { key: 'foundations', label: 'Foundations' },
 ]
-const isPage = (s: string): s is PageKey => s === 'home' || s === 'docs' || s === 'foundations'
+const isPage = (s: string): s is PageKey =>
+  s === 'home' || s === 'docs' || s === 'example' || s === 'foundations'
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Showcase chrome. Built entirely from the design system + Box/Text, so this
  * app itself passes the lockdown lint (no raw <div>, no arbitrary Tailwind).
  * `pre`/`code` are permitted by the lockdown rules and used only for snippets.
  * ────────────────────────────────────────────────────────────────────────── */
+
+/** Top nav shared by the standalone pages (home + docs). */
+function TopBar({
+  dark,
+  onToggleDark,
+  onNavigate,
+}: {
+  dark: boolean
+  onToggleDark: () => void
+  onNavigate: (name: string) => void
+}) {
+  return (
+    <Box
+      as="header"
+      flexDirection="row"
+      className="sticky top-0 z-20 items-center justify-between border-b border-border bg-background/80 px-10 py-4 backdrop-blur"
+    >
+      <Box
+        as="div"
+        role="button"
+        tabIndex={0}
+        onClick={() => onNavigate('home')}
+        flexDirection="row"
+        gap="s"
+        className="cursor-pointer items-center"
+      >
+        <HiyfLogo height={22} />
+        <Text variant="label">HIYF</Text>
+      </Box>
+      <Box flexDirection="row" gap="xs" className="items-center">
+        <Button intent="ghost" size="sm" onClick={() => onNavigate('docs')}>Docs</Button>
+        <Button intent="ghost" size="sm" onClick={() => onNavigate('example')}>Components</Button>
+        <Button intent="secondary" size="sm" onClick={onToggleDark}>
+          {dark ? '☀ Light' : '☾ Dark'}
+        </Button>
+      </Box>
+    </Box>
+  )
+}
+
+/** The example project's landing tab — explains what the gallery is. */
+function ExampleHome({ onNavigate }: { onNavigate: (name: string) => void }) {
+  return (
+    <Box flexDirection="column" gap="xl" className="mx-auto w-full max-w-3xl px-10 py-12">
+      <Box flexDirection="column" gap="s">
+        <Text variant="caption" color="muted">EXAMPLE PROJECT</Text>
+        <Text variant="heading-l" as="h1">An example design system</Text>
+        <Text color="muted">
+          This is HIYF in its neutral theme — an example of the showcase your project
+          generates. When you set up HIYF (start fresh, model a reference, or adopt an
+          existing app), your own components and tokens are re-themed to your brand and
+          rendered exactly like this. Browse the components in the sidebar to see what you get.
+        </Text>
+      </Box>
+      <Box flexDirection="row" gap="s" className="flex-wrap items-center">
+        <Button intent="primary" onClick={() => onNavigate('foundations')}>See the tokens</Button>
+        <Button intent="secondary" onClick={() => onNavigate('home')}>Set up your own</Button>
+      </Box>
+    </Box>
+  )
+}
 
 function CodeBlock({ code }: { code: string }) {
   return (
@@ -106,6 +171,7 @@ export function App() {
     setSelected(name)
     if (typeof window !== 'undefined') window.location.hash = encodeURIComponent(name)
   }
+  const toggleDark = () => setDark((d) => !d)
 
   if (typeof document !== 'undefined') {
     document.documentElement.classList.toggle('dark', dark)
@@ -127,51 +193,28 @@ export function App() {
     ? undefined
     : registry.find((e) => e.name === selected) ?? filtered[0] ?? registry[0]
 
-  const crumbCategory = page ? 'HIYF' : current?.category
-  const crumbName =
-    page === 'home'
-      ? 'Home'
-      : page === 'docs'
-        ? 'Docs'
-        : page === 'foundations'
-          ? 'Foundations'
-          : current?.name
-
-  // Home is the front door: full-bleed landing, no sidebar — a minimal top nav
-  // leads into the docs + the component sandbox.
+  // Standalone pages — the website landing and the documentation. Both use the
+  // top nav, neither uses the example project's sidebar.
   if (page === 'home') {
-    const firstComponent = registry[0]?.name ?? 'foundations'
     return (
       <Box flexDirection="column" className="min-h-screen bg-background">
-        <Box
-          as="header"
-          flexDirection="row"
-          className="sticky top-0 z-20 items-center justify-between border-b border-border bg-background/80 px-10 py-4 backdrop-blur"
-        >
-          <Box
-            as="div"
-            role="button"
-            tabIndex={0}
-            onClick={() => select('home')}
-            flexDirection="row"
-            gap="s"
-            className="cursor-pointer items-center"
-          >
-            <HiyfLogo height={22} />
-            <Text variant="label">HIYF</Text>
-          </Box>
-          <Box flexDirection="row" gap="xs" className="items-center">
-            <Button intent="ghost" size="sm" onClick={() => select('docs')}>Docs</Button>
-            <Button intent="ghost" size="sm" onClick={() => select(firstComponent)}>Components</Button>
-            <Button intent="secondary" size="sm" onClick={() => setDark((d) => !d)}>
-              {dark ? '☀ Light' : '☾ Dark'}
-            </Button>
-          </Box>
-        </Box>
+        <TopBar dark={dark} onToggleDark={toggleDark} onNavigate={select} />
         <Home onNavigate={select} />
       </Box>
     )
   }
+  if (page === 'docs') {
+    return (
+      <Box flexDirection="column" className="min-h-screen bg-background">
+        <TopBar dark={dark} onToggleDark={toggleDark} onNavigate={select} />
+        <Docs onNavigate={select} />
+      </Box>
+    )
+  }
+
+  // The example project: left sidebar (Overview + Foundations + components).
+  const crumbName =
+    page === 'example' ? 'Overview' : page === 'foundations' ? 'Foundations' : current?.name
 
   return (
     <Box flexDirection="row" className="min-h-screen bg-background">
@@ -203,9 +246,9 @@ export function App() {
         <Box flexDirection="column" gap="l" className="px-3 pb-10">
           <Box flexDirection="column" gap="xs">
             <Box className="px-3 pb-1">
-              <Text variant="caption" color="muted">OVERVIEW</Text>
+              <Text variant="caption" color="muted">EXAMPLE PROJECT</Text>
             </Box>
-            {PAGES.map((p) => (
+            {SIDEBAR_PAGES.map((p) => (
               <NavItem
                 key={p.key}
                 label={p.label}
@@ -244,28 +287,21 @@ export function App() {
           className="sticky top-0 z-20 items-center justify-between border-b border-border bg-background/80 px-10 py-4 backdrop-blur"
         >
           <Box flexDirection="row" gap="s" className="items-center">
-            <Text variant="caption" color="muted">{crumbCategory}</Text>
+            <Text variant="caption" color="muted">Example project</Text>
             <Text variant="caption" color="muted">/</Text>
             <Text variant="label">{crumbName}</Text>
           </Box>
-          <Button intent="secondary" size="sm" onClick={() => setDark((d) => !d)}>
+          <Button intent="secondary" size="sm" onClick={toggleDark}>
             {dark ? '☀ Light' : '☾ Dark'}
           </Button>
         </Box>
 
-        {page === 'docs' ? (
-          <Docs onNavigate={select} />
+        {page === 'example' ? (
+          <ExampleHome onNavigate={select} />
         ) : page === 'foundations' ? (
           <Foundations />
         ) : current ? (
           <Box flexDirection="column" gap="xl" className="mx-auto w-full max-w-3xl px-10 py-12">
-            <Box flexDirection="column" gap="xs" padding="m" borderRadius="m" className="border border-border bg-muted/40">
-              <Text variant="label">Example design system</Text>
-              <Text variant="caption" color="muted">
-                This gallery is HIYF in its neutral theme — an example of the showcase your
-                project generates, re-themed to your brand.
-              </Text>
-            </Box>
             <Box flexDirection="column" gap="s">
               <Box flexDirection="row" gap="s" className="items-center">
                 <Text variant="heading-s">{current.name}</Text>
