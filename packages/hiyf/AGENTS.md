@@ -93,7 +93,7 @@ hatch. A few key APIs:
 Full catalog — actions: ButtonGroup, Input, InputGroup, InputOTP, Textarea, Select,
 NativeSelect, Combobox, Checkbox, Switch, Slider, Toggle, ToggleGroup, RadioGroup,
 Label, Field. Feedback/display: Status, Badge, Alert, Card, Progress, Skeleton,
-Spinner, Avatar, Kbd, Empty, Toaster. Layout/data: Separator, AspectRatio,
+Spinner, Avatar, Image, Kbd, Empty, Toaster. Layout/data: Separator, AspectRatio,
 ScrollArea, Table, Carousel, Grid, GridItem. Navigation: Tabs, Accordion,
 Collapsible, Breadcrumb, Pagination, Command, NavigationMenu, Menubar. Overlays:
 Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip, DropdownMenu,
@@ -117,6 +117,26 @@ import { Home01Icon, Search01Icon } from '@jackbernnie/hiyf/icons'
 
 `size`: `xs s m l xl`. `color` defaults to `current` (inherits text color, so
 icons inside buttons just work); other values: `muted accent success warning danger`.
+
+## Images
+
+Raw `<img>` fails the build — render images through `<Image>`:
+
+```tsx
+import { Image } from '@jackbernnie/hiyf'
+
+<Image src="/logo.png" alt="Logo" width={120} height={32} radius="m" fit="contain" />
+```
+
+`radius`: `none s m l xl full`. `fit`: `cover contain fill none`. `alt` is required
+(pass `""` for purely decorative images).
+
+## A note on `<Box>` vs `<Text>` className
+
+`<Box>` accepts `className` for standard utility classes (`flex`, `items-center`).
+`<Text>` does NOT — it is closed; a `className` on it is dropped and the lint flags
+it. Put layout on a `<Box>` wrapper; use Text props (`variant`, `color`, `align`,
+`truncate`, `monospace`) for everything else.
 
 ## When something you need doesn't exist
 

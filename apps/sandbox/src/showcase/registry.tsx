@@ -43,6 +43,7 @@ import {
   CardContent,
   CardFooter,
   Avatar,
+  Image,
   Kbd,
   Separator,
   AspectRatio,
@@ -547,6 +548,13 @@ const AvatarDemo: FC = () => (
     <Avatar fallback="MD" size="md" />
     <Avatar fallback="LG" size="lg" />
     <Avatar src="https://github.com/shadcn.png" alt="shadcn" fallback="CN" size="md" />
+  </Box>
+)
+
+const ImageDemo: FC = () => (
+  <Box gap="l" className="items-center">
+    <Image src="https://github.com/shadcn.png" alt="example" width={96} height={96} radius="m" />
+    <Image src="https://github.com/shadcn.png" alt="example" width={96} height={96} radius="full" />
   </Box>
 )
 
@@ -1588,6 +1596,20 @@ toast('New notification')`,
 <Avatar fallback="MD" size="md" />
 <Avatar fallback="LG" size="lg" />
 <Avatar src="https://github.com/shadcn.png" fallback="CN" size="md" />`,
+      },
+    ],
+  },
+  {
+    name: 'Image',
+    category: 'Display',
+    description:
+      'The closed, sanctioned way to render an image — raw <img> fails the lockdown lint. Size with width/height, shape with radius, control object-fit with fit. No className/style escape hatch.',
+    demos: [
+      {
+        title: 'Radius',
+        Render: ImageDemo,
+        code: `<Image src="/logo.png" alt="Logo" width={96} height={96} radius="m" />
+<Image src="/avatar.png" alt="Avatar" width={96} height={96} radius="full" />`,
       },
     ],
   },

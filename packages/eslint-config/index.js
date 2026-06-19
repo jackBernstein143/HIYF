@@ -73,6 +73,14 @@ const syntaxRules = [
     message:
       'Inline style props bypass the design tokens. Use a component prop or a token-based class.',
   },
+  {
+    // <Text> is a closed primitive — it omits className, so a class passed to it
+    // is silently dropped (and the variant styling can break). Layout belongs on
+    // a <Box> wrapper; text styling belongs in Text props.
+    selector: 'JSXOpeningElement[name.name="Text"] JSXAttribute[name.name="className"]',
+    message:
+      '<Text> ignores className (it is a closed primitive — the class is silently dropped). Put layout utilities on a <Box> wrapper, or use Text props (variant, color, align, truncate, monospace).',
+  },
 ]
 
 function buildRules(icons) {

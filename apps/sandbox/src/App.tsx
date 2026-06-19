@@ -4,6 +4,7 @@ import { categories, registry, type Entry } from './showcase/registry'
 import { Home } from './pages/Home'
 import { Foundations } from './pages/Foundations'
 import { Docs } from './pages/Docs'
+import { HiyfLogo } from './Logo'
 
 // Doc pages live alongside the component registry in the same nav. A selection
 // is either one of these page keys or a component name.
@@ -156,9 +157,7 @@ export function App() {
             gap="s"
             className="cursor-pointer items-center"
           >
-            <Box className="size-5 items-center justify-center rounded-md bg-primary">
-              <Text variant="label" color="inverse">H</Text>
-            </Box>
+            <HiyfLogo size={26} />
             <Text variant="label">HIYF</Text>
           </Box>
           <Box flexDirection="row" gap="xs" className="items-center">
