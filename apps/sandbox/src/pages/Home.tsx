@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Box, Text, Badge, Button, Alert, ToggleGroup, Icon } from '@jackbernnie/hiyf'
 import { ArrowRight01Icon } from '@jackbernnie/hiyf/icons'
 import { CodeBlock } from './docKit'
+import { HiyfLogo } from '../Logo'
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Home — what this is and how to use it. Built entirely from the design system,
@@ -266,15 +267,20 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
   if (view === 'landing') {
     return (
       <Box flexDirection="column" gap="2xl" className="mx-auto w-full max-w-5xl px-10 py-12">
-        {/* Hero — hammer the value prop, two-tone headline */}
-        <Box flexDirection="column" gap="l">
+        {/* Hero */}
+        <Box flexDirection="column" gap="m">
+          {/* logo + wordmark lockup */}
+          <Box flexDirection="row" gap="m" className="items-center">
+            <HiyfLogo size={48} />
+            <Text variant="heading-xl" as="h1">human in your face</Text>
+          </Box>
           <Box flexDirection="row" className="items-center">
             <Badge tone="neutral">AI design protocol</Badge>
           </Box>
           <Box flexDirection="column" className="max-w-4xl">
-            <Text variant="heading-l" as="h1">
+            <Text variant="heading-m">
               A design system your coding agent can build on.{' '}
-              <Text as="span" variant="heading-l" color="muted">
+              <Text as="span" variant="heading-m" color="muted">
                 It can&rsquo;t drift or go off-brand &mdash; the build won&rsquo;t let it.
               </Text>
             </Text>
