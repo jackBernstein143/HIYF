@@ -297,17 +297,22 @@ function ChoiceCard({ title, desc, onClick }: { title: string; desc: string; onC
   )
 }
 
-/* A compact reminder of the flow, shown at the top of each path so people know
- * what they're about to do before reading the details. */
+/* A compact reminder of the flow, shown just above the prompt so people know what
+ * they're about to do. A light stepper: numbered chips + the step, arrows between. */
 function HowItWorksMini() {
   return (
-    <Box flexDirection="column" gap="s" padding="l" borderRadius="m" className="border border-border bg-muted/40">
+    <Box flexDirection="column" gap="m" padding="l" borderRadius="l" className="bg-muted/50">
       <Text variant="caption" color="muted">HOW IT WORKS</Text>
-      <Box flexDirection="row" gap="l" className="flex-wrap">
+      <Box flexDirection="row" gap="m" className="flex-wrap items-center">
         {STEPS.map((s, i) => (
-          <Box key={s.title} flexDirection="row" gap="s" flexGrow={1} className="min-w-56 basis-0 items-baseline">
-            <Text variant="caption" color="muted" monospace>{i + 1}</Text>
-            <Text variant="caption" color="muted">{s.title}</Text>
+          <Box key={s.title} flexDirection="row" gap="m" className="items-center">
+            <Box flexDirection="row" gap="s" className="items-center">
+              <Box className="size-6 shrink-0 items-center justify-center rounded-full bg-background">
+                <Text variant="caption" color="muted" monospace>{i + 1}</Text>
+              </Box>
+              <Text variant="label">{s.title}</Text>
+            </Box>
+            {i < STEPS.length - 1 ? <Icon icon={ArrowRight01Icon} size="s" color="muted" /> : null}
           </Box>
         ))}
       </Box>
@@ -401,7 +406,6 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
         <Box flexDirection="row" className="items-center">
           <Button intent="ghost" size="sm" onClick={() => setView('landing')}>← All paths</Button>
         </Box>
-        <HowItWorksMini />
         <Box flexDirection="column" gap="s">
           <Text variant="heading-l" as="h1">Start a new design system</Text>
           <Text color="muted">Two ways to begin — pick one.</Text>
