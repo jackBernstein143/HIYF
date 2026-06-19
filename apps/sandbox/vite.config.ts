@@ -39,6 +39,13 @@ export default defineConfig({
     // babel plugin above compiles the primitives live. Match only the bare
     // specifier so `hiyf/theme.css` still resolves via the package exports.
     alias: [
+      // Subpaths first (more specific), then the bare specifier. Both resolve to
+      // SOURCE so the sandbox build never depends on the package's built dist/
+      // (absent in CI / on Vercel).
+      {
+        find: /^@jackbernnie\/hiyf\/icons$/,
+        replacement: path.resolve(monorepoRoot, 'packages/hiyf/src/icons.ts'),
+      },
       {
         find: /^@jackbernnie\/hiyf$/,
         replacement: path.resolve(monorepoRoot, 'packages/hiyf/src/index.ts'),
