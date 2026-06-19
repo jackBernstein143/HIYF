@@ -228,9 +228,9 @@ const PROMPT_LABEL: Record<PromptKey, string> = {
 }
 
 const STEPS = [
-  { title: 'Pick a path, copy the prompt', body: 'Choose "start new" or "adopt an existing app", then copy the generated prompt.' },
-  { title: 'Hand it to your coding agent', body: 'Paste it into Claude Code, Codex, Cursor, or any agent. It asks a question or two, then builds.' },
-  { title: 'Review your design system', body: "It scaffolds a showcase of your themed components and keeps everything on-system — iterate until it's right." },
+  { short: 'Copy the prompt', title: 'Pick a path, copy the prompt', body: 'Choose "start new" or "adopt an existing app", then copy the generated prompt.' },
+  { short: 'Hand it to your agent', title: 'Hand it to your coding agent', body: 'Paste it into Claude Code, Codex, Cursor, or any agent. It asks a question or two, then builds.' },
+  { short: 'Review the result', title: 'Review your design system', body: "It scaffolds a showcase of your themed components and keeps everything on-system — iterate until it's right." },
 ]
 
 function PathCard({
@@ -303,15 +303,13 @@ function HowItWorksMini() {
   return (
     <Box flexDirection="column" gap="m" padding="l" borderRadius="l" className="bg-muted/50">
       <Text variant="caption" color="muted">HOW IT WORKS</Text>
-      <Box flexDirection="row" gap="m" className="flex-wrap items-center">
+      <Box flexDirection="row" gap="s" className="flex-wrap items-center">
         {STEPS.map((s, i) => (
-          <Box key={s.title} flexDirection="row" gap="m" className="items-center">
-            <Box flexDirection="row" gap="s" className="items-center">
-              <Box className="size-6 shrink-0 items-center justify-center rounded-full bg-background">
-                <Text variant="caption" color="muted" monospace>{i + 1}</Text>
-              </Box>
-              <Text variant="label">{s.title}</Text>
+          <Box key={s.short} flexDirection="row" gap="s" className="items-center">
+            <Box className="size-6 shrink-0 items-center justify-center rounded-full bg-background">
+              <Text variant="caption" color="muted" monospace>{i + 1}</Text>
             </Box>
+            <Text variant="label">{s.short}</Text>
             {i < STEPS.length - 1 ? <Icon icon={ArrowRight01Icon} size="s" color="muted" /> : null}
           </Box>
         ))}

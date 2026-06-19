@@ -17,10 +17,13 @@ export function Docs({ onNavigate }: { onNavigate: (name: string) => void }) {
 
       <Section title="What it is">
         <Text color="muted">
-          HIYF is an AI design protocol — a locked design system built on shadcn/ui plus StyleX
-          primitives. The only UI you can express is on-system UI; off-system code (raw elements,
-          arbitrary Tailwind, inline styles) fails the build via the lockdown lint. That is what
-          makes it safe to hand to a coding agent.
+          HIYF is an AI design protocol — a locked design system you can theme to any brand. It
+          pairs StyleX layout and text primitives (Box, Text, tokens) with a closed component
+          layer (built on a shadcn/ui base) and a token system you re-theme per project. The only
+          UI you can express is on-system UI; off-system code (raw elements, arbitrary Tailwind,
+          inline styles) fails the build via the lockdown lint — which is what makes it safe to
+          hand to a coding agent, whether you start fresh, model it after a reference, or adopt an
+          existing app&rsquo;s brand.
         </Text>
       </Section>
 
