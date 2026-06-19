@@ -283,17 +283,34 @@ function ChoiceCard({ title, desc, onClick }: { title: string; desc: string; onC
       tabIndex={0}
       onClick={onClick}
       flexDirection="column"
-      gap="m"
+      gap="s"
       padding="xl"
       borderRadius="l"
-      flexGrow={1}
-      className="min-w-72 basis-0 cursor-pointer border border-border bg-card transition-colors hover:border-foreground/40 hover:bg-muted/40"
+      className="cursor-pointer border border-border bg-card transition-colors hover:border-foreground/40 hover:bg-muted/40"
     >
       <Box flexDirection="row" justifyContent="between" className="items-center">
         <Text variant="heading-s">{title}</Text>
         <Icon icon={ArrowRight01Icon} size="m" color="muted" />
       </Box>
       <Text color="muted">{desc}</Text>
+    </Box>
+  )
+}
+
+/* A compact reminder of the flow, shown at the top of each path so people know
+ * what they're about to do before reading the details. */
+function HowItWorksMini() {
+  return (
+    <Box flexDirection="column" gap="s" padding="l" borderRadius="m" className="border border-border bg-muted/40">
+      <Text variant="caption" color="muted">HOW IT WORKS</Text>
+      <Box flexDirection="row" gap="l" className="flex-wrap">
+        {STEPS.map((s, i) => (
+          <Box key={s.title} flexDirection="row" gap="s" flexGrow={1} className="min-w-56 basis-0 items-baseline">
+            <Text variant="caption" color="muted" monospace>{i + 1}</Text>
+            <Text variant="caption" color="muted">{s.title}</Text>
+          </Box>
+        ))}
+      </Box>
     </Box>
   )
 }
@@ -384,11 +401,12 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
         <Box flexDirection="row" className="items-center">
           <Button intent="ghost" size="sm" onClick={() => setView('landing')}>← All paths</Button>
         </Box>
+        <HowItWorksMini />
         <Box flexDirection="column" gap="s">
           <Text variant="heading-l" as="h1">Start a new design system</Text>
           <Text color="muted">Two ways to begin — pick one.</Text>
         </Box>
-        <Box flexDirection="row" gap="l" className="flex-wrap">
+        <Box flexDirection="column" gap="m">
           <ChoiceCard
             title="Standard template"
             desc="Start on HIYF's neutral theme and build right away."
@@ -423,6 +441,7 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
           {view === 'existing' ? '← All paths' : '← Choose a starting point'}
         </Button>
       </Box>
+      <HowItWorksMini />
       <Box flexDirection="column" gap="m">
         <Text variant="heading-l" as="h1">{detailTitle}</Text>
         <Text color="muted">{BLURB[key]}</Text>
