@@ -109,7 +109,7 @@ produce the inventory and a draft theme automatically.)
 
 PHASE 2 — PROPOSE A BRAND-PRESERVING THEME
 Produce one hiyf.theme.css overriding HIYF's CSS variables (every knob is in
-node_modules/@jackbernnie/hiyf/theme-template.css):
+node_modules/@jackbernnie/hiyf/src/theme-template.css):
 - ONE value per color role — --primary (the brand color), --background, --card,
   --muted, --foreground, --muted-foreground, --border, --destructive — plus the
   matching --hiyf-* tokens, for light AND dark. Never copy the app's inconsistency
@@ -198,9 +198,14 @@ primary/brand, destructive, accents; type family + scale; radius; spacing; shado
 each value + where it came from + your confidence. I approve or correct.
 
 PHASE 3 — APPLY & PREVIEW  (STOP for my approval)
-Install @jackbernnie/hiyf + hiyf-eslint-config; wire the CSS imports + the approved
-theme. Build ONE representative screen; if you can screenshot, put it next to the
-reference on a served review page (one URL) and refine until the look matches.
+If this isn't a project yet, scaffold a Vite + React + TypeScript app with Tailwind v4.
+Install @jackbernnie/hiyf + hiyf-eslint-config and wire the CSS imports — the exact
+install + CSS lines are in node_modules/@jackbernnie/hiyf/AGENTS.md. Put your approved
+theme in a hiyf.theme.css (imported after theme.css/styles.css) that overrides the
+variables documented in node_modules/@jackbernnie/hiyf/src/theme-template.css — the
+--primary/--background/… palette plus the --hiyf-* primitive tokens, for light AND dark.
+Build ONE representative screen; if you can screenshot, put it next to the reference on a
+served review page (one URL) and refine until the look matches.
 
 PHASE 4 — BUILD
 Build the rest on HIYF — read node_modules/@jackbernnie/hiyf/AGENTS.md and follow it;
