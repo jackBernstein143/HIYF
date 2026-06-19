@@ -149,45 +149,61 @@ DONE WHEN: the app looks essentially identical to before, every screen is on-sys
 (lint + build green with the lockdown on), behavior is unchanged, and the only
 escape hatches are ones you listed and I approved.`
 
-// Reference: copy an existing site/tool's look (a URL or screenshots) onto HIYF —
-// no codebase needed. Extract the design language, standardize it, build on it.
-const referencePrompt = `Build a new project on the @jackbernnie/hiyf AI design protocol, themed to MATCH a
-reference I'll give you — a website URL and/or screenshots. Copy its look, then
-standardize it so it's robust and can't drift.
+// Reference: model a design system after a brand the user's OWN agent researches
+// (a URL, screenshots, or just a name). All the complexity lives in this prompt — the
+// agent asks questions, does its own deep research, and builds. No API key, no backend.
+const referencePrompt = `Build a new project on the @jackbernnie/hiyf AI design protocol, with a theme MODELED
+AFTER a reference — using YOUR OWN research. Copy the look honestly, standardize it so it
+can't drift, then build. Everything below runs on you; no API key or backend needed.
 
-PHASE 1 — CAPTURE THE REFERENCE'S DESIGN LANGUAGE
-- URL: github.com/jackBernstein143/HIYF ships tools/extract-url.mjs —
-  \`node extract-url.mjs <url> --json inv.json\` reads the site's COMPUTED styles
-  (colors by role, fonts, sizes, radius, spacing, shadows); then
-  \`node synthesize.mjs inv.json --out hiyf.theme.css\` drafts a HIYF theme.
-- Screenshots: study them and extract the same — palette (background, surface, text,
-  muted text, border, primary/brand, destructive), the type family + scale, corner
-  radius, spacing rhythm, shadows.
-Standardize as you capture: ONE value per role; collapse near-duplicates. Show me the
-mapping (each value + where it came from) and let me approve or correct it.
+PHASE 0 — ASK ME FIRST (don't skip)
+- What should the design system be modeled after? A product/brand, an existing app, a
+  vibe — or just say "use the standard HIYF template".
+- Share whatever you have: URL(s), and/or upload example images / screenshots as inspiration.
+- Any must-keep specifics? (exact brand color, font, logo.)
 
-PHASE 2 — APPLY & PREVIEW  (STOP for my approval)
+PHASE 1 — RESEARCH THE REAL DESIGN LANGUAGE  (a landing page lies — dig deeper)
+Use web search + your own analysis. Don't model the marketing site alone; find HONEST
+sources and weight them higher:
+- the brand's OFFICIAL design system / brand guidelines, if public;
+- OPEN-SOURCE token sources on GitHub (tailwind config, tokens.json, theme.css, CSS
+  custom properties, their component library/SDK) — usually the truest signal;
+- the REAL PRODUCT UI (docs, help center, changelog, review-site screenshots) — not the
+  hero page;
+- any public Storybook / living style guide.
+If I uploaded images, read palette + type + spacing + radius straight from them.
+Reconcile it all into ONE profile; call out where the marketing site differs from the
+real product; collapse near-duplicates to ONE value per role.
+(Optional exact values: if you have the HIYF repo + a browser, tools/extract-url.mjs reads
+a live site's COMPUTED styles and tools/synthesize.mjs drafts a theme — but your own
+research above is the main method.)
+
+PHASE 2 — PROPOSE  (STOP for my approval)
+Show me the standardized mapping: background, surface, text, muted text, border,
+primary/brand, destructive, accents; type family + scale; radius; spacing; shadows —
+each value + where it came from + your confidence. I approve or correct.
+
+PHASE 3 — APPLY & PREVIEW  (STOP for my approval)
 Install @jackbernnie/hiyf + hiyf-eslint-config; wire the CSS imports + the approved
-hiyf.theme.css. Build ONE representative screen. If you can screenshot, put it on a
-served review page next to the reference (one URL) and refine until the look matches.
+theme. Build ONE representative screen; if you can screenshot, put it next to the
+reference on a served review page (one URL) and refine until the look matches.
 
-PHASE 3 — BUILD
-With the theme approved, build the rest on HIYF — read
-node_modules/@jackbernnie/hiyf/AGENTS.md and follow it; turn on the lockdown lint:
+PHASE 4 — BUILD
+Build the rest on HIYF — read node_modules/@jackbernnie/hiyf/AGENTS.md and follow it;
+turn on the lockdown lint:
   import { defineLockdown } from 'hiyf-eslint-config'
   export default defineLockdown({ icons: 'hugeicons' })
 Everything stays on-system; the look stays the reference's.
 
-Notes: icons default to hugeicons (a URL/screenshot doesn't dictate an icon library).
-The synthesized color roles are a DRAFT — brand color and backgrounds are usually
-right; surface/muted roles sometimes need a tweak, so confirm them with me.`
+Notes: icons default to hugeicons. The researched color roles are a DRAFT — brand color
+and backgrounds are usually right; surface/muted sometimes need a tweak, so confirm with me.`
 
 type StartPath = 'new' | 'existing' | 'reference'
 
 const BLURB: Record<StartPath, string> = {
   new: 'Greenfield — the agent installs HIYF, wires up the theme + lint, and builds using only approved components, verifying its own work.',
   existing: 'Brownfield — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for approval, then migrates the rest, lint-verified.',
-  reference: "Copy a reference — give the agent a website URL or screenshots; it extracts that look into a standardized HIYF theme, previews it, then builds on it.",
+  reference: "Copy a reference — your coding agent asks what to model after (a URL, images, or just a name), researches the real design language itself (not just the landing page), proposes a standardized theme, then builds. No API key — it all runs on your agent.",
 }
 const PROMPT_LABEL: Record<StartPath, string> = {
   new: 'Setup + usage prompt',
