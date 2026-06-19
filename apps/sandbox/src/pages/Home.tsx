@@ -224,7 +224,7 @@ type PromptKey = 'standard' | 'reference' | 'existing'
 const BLURB: Record<PromptKey, string> = {
   standard: 'Start fresh on the standard HIYF theme — the agent installs HIYF, wires the theme + lockdown lint, builds only from approved components, and ends by rendering a local showcase of your design system to review.',
   reference: "Model your design system after a reference — your coding agent asks what to model after (a URL, images, or a name), researches the real design language itself (not just the landing page), proposes a standardized theme, builds, and renders a local showcase. Runs entirely on your agent — no API key.",
-  existing: 'Adopt HIYF in an existing app — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for approval, migrates the rest (before/after verified), and renders your standardized system for review.',
+  existing: 'Standardize your existing app — the agent inventories your app, proposes a standardized theme that preserves your brand, previews one page for approval, migrates the rest (before/after verified), and renders your standardized system for review.',
 }
 const PROMPT_LABEL: Record<PromptKey, string> = {
   standard: 'New-project prompt',
@@ -371,7 +371,7 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
               }}
             />
             <PathCard
-              title="Adopt in an existing app"
+              title="Standardize your existing app"
               desc="Bring HIYF into an app you already have — preserve its brand, standardize it, lock out drift."
               banner="path-banner--existing"
               onClick={() => setView('existing')}
@@ -432,7 +432,7 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
   const key: PromptKey = view === 'existing' ? 'existing' : (newKind ?? 'standard')
   const detailTitle =
     view === 'existing'
-      ? 'Adopt HIYF in an existing app'
+      ? 'Standardize your existing app'
       : key === 'reference'
         ? 'Adopt another design system'
         : 'Standard template'
