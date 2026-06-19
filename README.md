@@ -1,9 +1,9 @@
 # HIYF — Human In Your Face
 
-A personal design system: the **full shadcn/ui component set as a robust base**,
-themed with a neutral `radix-vega` preset, brought under **HIYF's "LLM-safe"
-philosophy** — the only expressible choices should be correct ones. (The name is
-a play on Apple's "Human Interface".)
+An **AI design protocol** — a locked design system built on the **full shadcn/ui
+component set as a robust base**, themed with a neutral `radix-vega` preset and
+brought under HIYF's **"LLM-safe" philosophy**: the only expressible choices should
+be correct ones. (The name is a play on Apple's "Human Interface".)
 
 The philosophy has three pillars, all in place:
 

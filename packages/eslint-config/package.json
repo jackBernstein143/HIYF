@@ -1,7 +1,7 @@
 {
   "name": "hiyf-eslint-config",
   "version": "0.2.0",
-  "description": "LLM-safe lockdown ESLint rules for the @jackbernnie/hiyf design system — make off-system UI code fail the build.",
+  "description": "Lockdown ESLint rules for the @jackbernnie/hiyf AI design protocol — make off-system UI code fail the build.",
   "license": "Apache-2.0",
   "type": "module",
   "publishConfig": {

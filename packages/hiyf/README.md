@@ -1,8 +1,8 @@
 # @jackbernnie/hiyf
 
-**human-in-your-face** — a personal, LLM-safe design system: the full shadcn/ui
-component set as a robust base, themed neutral, and closed down so the only
-expressible choices are correct ones.
+**human-in-your-face** — an AI design protocol (a locked, LLM-safe design system):
+the full shadcn/ui component set as a robust base, themed neutral, and closed down
+so the only expressible choices are correct ones.
 
 ```bash
 npm install @jackbernnie/hiyf

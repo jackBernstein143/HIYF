@@ -1,8 +1,8 @@
 # Building UI with `@jackbernnie/hiyf`
 
 > Instructions for AI coding agents (Claude Code, Codex, Cursor, …). This project
-> uses the **hiyf** design system with its **lockdown** lint. Build UI using
-> **only** this system — off-system code fails the build on purpose.
+> uses the **hiyf** AI design protocol (a locked design system) with its **lockdown**
+> lint. Build UI using **only** this system — off-system code fails the build on purpose.
 
 ## The three rules (these fail `npm run build`)
 

@@ -1,4 +1,4 @@
-# Using this design system in a project
+# Using this AI design protocol in a project
 
 The package is **`@jackbernnie/hiyf`**. It ships three things:
 - **Components** — `import { Button, Card, Dialog, … } from '@jackbernnie/hiyf'`

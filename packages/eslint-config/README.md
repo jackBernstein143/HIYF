@@ -1,8 +1,8 @@
 # hiyf-eslint-config
 
 The **"lockdown"** ESLint rules for the [`@jackbernnie/hiyf`](https://www.npmjs.com/package/@jackbernnie/hiyf)
-design system. They make off-system UI code *fail the build* instead of silently
-shipping — which is what lets you hand a project to an LLM and trust the result.
+AI design protocol. They make off-system UI code *fail the build* instead of
+silently shipping — which is what lets you hand a project to an LLM and trust the result.
 
 ```bash
 npm install -D hiyf-eslint-config

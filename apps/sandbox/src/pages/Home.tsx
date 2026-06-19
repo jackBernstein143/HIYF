@@ -159,14 +159,15 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
       {/* Hero */}
       <Box flexDirection="column" gap="m">
         <Box flexDirection="row" gap="s" className="items-center">
-          <Badge tone="neutral">LLM-safe design system</Badge>
+          <Badge tone="neutral">AI design protocol</Badge>
         </Box>
         <Text variant="heading-l" as="h1">
           human-in-your-face
         </Text>
         <Text variant="body">
-          HIYF is a locked design system for AI-generated interfaces. It gives
-          coding agents enough freedom to build, but not enough freedom to drift.
+          HIYF is an AI design protocol — a locked design system for AI-generated
+          interfaces. It gives coding agents enough freedom to build, but not enough
+          freedom to drift.
         </Text>
         <Text variant="body" color="muted">
           The only UI you can express is on-system UI — raw elements, arbitrary
