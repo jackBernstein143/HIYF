@@ -233,24 +233,44 @@ const STEPS = [
   { title: 'Review your design system', body: "It scaffolds a showcase of your themed components and keeps everything on-system — iterate until it's right." },
 ]
 
-function PathCard({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
+function PathCard({
+  title,
+  desc,
+  banner,
+  onClick,
+}: {
+  title: string
+  desc: string
+  banner: string
+  onClick: () => void
+}) {
   return (
     <Box
       role="button"
       tabIndex={0}
       onClick={onClick}
       flexDirection="column"
-      gap="m"
-      padding="xl"
       borderRadius="l"
       flexGrow={1}
-      className="min-w-72 basis-0 cursor-pointer border border-border bg-card transition-colors hover:border-foreground/30 hover:bg-muted/40"
+      className="min-w-72 basis-0 cursor-pointer overflow-hidden border border-border bg-card transition-colors hover:border-foreground/40"
     >
-      <Box flexDirection="row" justifyContent="between" className="items-center">
-        <Text variant="heading-s">{title}</Text>
-        <Icon icon={ArrowRight01Icon} size="m" color="muted" />
+      {/* image banner with the path name overlaid + grain */}
+      <Box className={`relative h-36 overflow-hidden path-banner ${banner}`}>
+        <Box className="grain" />
+        <Box className="absolute inset-0 bg-black/35" />
+        <Box
+          flexDirection="row"
+          justifyContent="between"
+          className="absolute inset-x-0 bottom-0 z-10 items-center px-5 py-4 text-white"
+        >
+          <Text variant="heading-s" color="white">{title}</Text>
+          <Icon icon={ArrowRight01Icon} size="m" color="current" />
+        </Box>
       </Box>
-      <Text color="muted">{desc}</Text>
+      {/* details below */}
+      <Box padding="l">
+        <Text color="muted">{desc}</Text>
+      </Box>
     </Box>
   )
 }
@@ -269,18 +289,19 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
       <Box flexDirection="column" gap="4xl" className="mx-auto w-full max-w-5xl px-10 py-12">
         {/* Hero */}
         <Box flexDirection="column" gap="m">
-          {/* logo + wordmark lockup */}
-          <Box flexDirection="row" gap="m" className="items-center">
-            <HiyfLogo height={72} />
-            <Text variant="heading-xl" as="h1">human in your face</Text>
+          {/* logo + wordmark lockup (small brand label) */}
+          <Box flexDirection="row" gap="s" className="items-center">
+            <HiyfLogo height={26} />
+            <Text variant="heading-s" as="h1">human in your face</Text>
           </Box>
           <Box flexDirection="row" className="items-center">
             <Badge tone="neutral">AI design protocol</Badge>
           </Box>
+          {/* the loud part */}
           <Box flexDirection="column" className="max-w-4xl">
-            <Text variant="heading-l">
+            <Text variant="heading-xl">
               A design system your coding agent can build on.{' '}
-              <Text as="span" variant="heading-l" color="muted">
+              <Text as="span" variant="heading-xl" color="muted">
                 It can&rsquo;t drift or go off-brand &mdash; the build won&rsquo;t let it.
               </Text>
             </Text>
@@ -294,11 +315,13 @@ export function Home({ onNavigate }: { onNavigate: (name: string) => void }) {
             <PathCard
               title="Start new"
               desc="Spin up a fresh design system — a standard template, or modeled after a reference you choose."
+              banner="path-banner--new"
               onClick={() => setView('new')}
             />
             <PathCard
               title="Adopt in an existing app"
               desc="Bring HIYF into an app you already have — preserve its brand, standardize it, lock out drift."
+              banner="path-banner--existing"
               onClick={() => setView('existing')}
             />
           </Box>
