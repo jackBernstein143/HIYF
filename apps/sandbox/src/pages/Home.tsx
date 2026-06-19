@@ -16,9 +16,13 @@ const showcaseStep = `
 
 SHOWCASE & ITERATE  (the payoff — do this last)
 - Scaffold a local /showcase page, served at ONE url, that renders MY design system in my
-  theme: the palette as labeled swatches, the type scale, radius + spacing, and a
-  representative component set (Button intents, Card, Input/Field, Select, Status/Badge/
-  Alert, Table, Tabs, a Dialog). Build it only from @jackbernnie/hiyf so it stays lint-clean.
+  theme — modeled on the HIYF component gallery, and COMPREHENSIVE, not a sample:
+    • Foundations first: the palette as labeled swatches, the full type scale, radius, spacing.
+    • Then EVERY component in the system, grouped by category (actions, forms, feedback,
+      display, navigation, overlays, layout/data, app shell), each with a realistic live
+      example plus its key variants/states. Use the full catalog in
+      node_modules/@jackbernnie/hiyf/AGENTS.md as the checklist — do not skip any component.
+  Build it only from @jackbernnie/hiyf so it stays lint-clean.
 - Give me that url. I review my design system there and tell you what to change; iterate
   with me until I'm happy — the lockdown keeps every change on-system.`
 
