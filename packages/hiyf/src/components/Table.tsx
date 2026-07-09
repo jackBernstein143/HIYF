@@ -198,13 +198,13 @@ function HeaderMenu<T>({
               onSelect={() => onSortChange?.({ key: column.key, direction: 'asc' })}
             >
               <CheckGlyph visible={activeSort?.direction === 'asc'} />
-              Sort ascending
+              Ascending
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => onSortChange?.({ key: column.key, direction: 'desc' })}
             >
               <CheckGlyph visible={activeSort?.direction === 'desc'} />
-              Sort descending
+              Descending
             </DropdownMenuItem>
           </>
         )}
