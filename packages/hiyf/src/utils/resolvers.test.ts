@@ -119,7 +119,7 @@ describe('addTokenProp — scalar values', () => {
       'scope',
     )
     expect(stylexStyles).toHaveLength(1)
-    expect(stylexStyles[0]).toEqual({ padding: '8px' })
+    expect(stylexStyles[0]).toEqual({ padding: 'var(--hiyf-space-s, 8px)' })
     expect(responsiveCSS).toBeNull()
   })
 
@@ -136,12 +136,12 @@ describe('addTokenProp — scalar values', () => {
       { padding: 's', p: 'xl' },
       'scope',
     )
-    expect(stylexStyles).toEqual([{ padding: '8px' }])
+    expect(stylexStyles).toEqual([{ padding: 'var(--hiyf-space-s, 8px)' }])
   })
 
   it('shorthand (p) is used when long form is undefined', () => {
     const { stylexStyles } = resolveBoxStyles({ p: 'm' }, 'scope')
-    expect(stylexStyles).toEqual([{ padding: '12px' }])
+    expect(stylexStyles).toEqual([{ padding: 'var(--hiyf-space-m, 12px)' }])
   })
 
   it('display/overflow scalar values map through', () => {
@@ -189,7 +189,7 @@ describe('addTokenProp — breakpoint variants', () => {
       'scope',
     )
     expect(responsiveCSS).toContain('@media (min-width: 768px)')
-    expect(responsiveCSS).toContain('padding: 16px')
+    expect(responsiveCSS).toContain('padding: var(--hiyf-space-l, 16px)')
   })
 
   it('breakpoints are emitted in ascending order', () => {
@@ -218,8 +218,8 @@ describe('addTokenProp — breakpoint variants', () => {
     )
     const mediaRules = responsiveCSS!.match(/@media \(min-width: 768px\)/g)
     expect(mediaRules).toHaveLength(1)
-    expect(responsiveCSS).toContain('padding: 16px')
-    expect(responsiveCSS).toContain('gap: 8px')
+    expect(responsiveCSS).toContain('padding: var(--hiyf-space-l, 16px)')
+    expect(responsiveCSS).toContain('gap: var(--hiyf-space-s, 8px)')
   })
 
   it('padding-top wins over padding-block at the same breakpoint', () => {
@@ -239,7 +239,7 @@ describe('addTokenProp — breakpoint variants', () => {
     expect(block.indexOf('padding-block')).toBeLessThan(
       block.indexOf('padding-top'),
     )
-    expect(block).toContain('padding-top: 0')
+    expect(block).toContain('padding-top: var(--hiyf-space-none, 0)')
   })
 })
 
@@ -249,7 +249,7 @@ describe('addTokenProp — token-CSS translations', () => {
       { borderRadius: { md: 'l' } },
       'scope',
     )
-    expect(responsiveCSS).toContain('border-radius: 16px')
+    expect(responsiveCSS).toContain('border-radius: var(--hiyf-radius-l, 16px)')
   })
 
   it('boxShadow scalar pushes the matching style', () => {
@@ -286,7 +286,7 @@ describe('addTokenProp — margin "auto" special case', () => {
 
   it('margin token (non-auto) translates to spacing value', () => {
     const { responsiveCSS } = resolveBoxStyles({ margin: { md: 'l' } }, 'scope')
-    expect(responsiveCSS).toContain('margin: 16px')
+    expect(responsiveCSS).toContain('margin: var(--hiyf-space-l, 16px)')
   })
 })
 
@@ -437,7 +437,7 @@ describe('CSS string builder', () => {
     )
     const mediaRules = responsiveCSS!.match(/@media \(min-width: 768px\)/g)
     expect(mediaRules).toHaveLength(1)
-    expect(responsiveCSS).toContain('padding: 16px')
+    expect(responsiveCSS).toContain('padding: var(--hiyf-space-l, 16px)')
     expect(responsiveCSS).toContain('width: 100px')
   })
 
@@ -446,8 +446,8 @@ describe('CSS string builder', () => {
       { padding: { hover: 'l', focus: 's' } },
       'scope',
     )
-    expect(responsiveCSS).toMatch(/:hover.*padding: 16px/)
-    expect(responsiveCSS).toMatch(/:focus.*padding: 8px/)
+    expect(responsiveCSS).toMatch(/:hover.*padding: var\(--hiyf-space-l, 16px\)/)
+    expect(responsiveCSS).toMatch(/:focus.*padding: var\(--hiyf-space-s, 8px\)/)
   })
 
   it('camelCase keys (zIndex) are converted to kebab-case in output', () => {
@@ -590,7 +590,7 @@ describe('mixed scenarios', () => {
       },
       'scope',
     )
-    expect(stylexStyles).toEqual([{ padding: '16px' }])
+    expect(stylexStyles).toEqual([{ padding: 'var(--hiyf-space-l, 16px)' }])
     expect(inlineStyle).toEqual({ opacity: 0.8 })
     expect(responsiveCSS).toContain('@media (min-width: 768px)')
     expect(responsiveCSS).toContain('width: 200px')

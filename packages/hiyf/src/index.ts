@@ -77,6 +77,8 @@ export { Image } from './components/Image'
 export type { ImageProps, ImageRadius, ImageFit } from './components/Image'
 export { Kbd } from './components/Kbd'
 export type { KbdProps } from './components/Kbd'
+export { MapEmbed } from './components/MapEmbed'
+export type { MapEmbedProps } from './components/MapEmbed'
 export { Empty } from './components/Empty'
 export type { EmptyProps } from './components/Empty'
 export { Toaster } from './components/Toaster'
@@ -90,7 +92,7 @@ export type { AspectRatioProps } from './components/AspectRatio'
 export { ScrollArea } from './components/ScrollArea'
 export type { ScrollAreaProps } from './components/ScrollArea'
 export { Table } from './components/Table'
-export type { TableProps, TableColumn } from './components/Table'
+export type { TableProps, TableColumn, TableFilterOption, TableSort } from './components/Table'
 export { Carousel } from './components/Carousel'
 export type { CarouselProps } from './components/Carousel'
 
@@ -141,6 +143,7 @@ export type {
   SidebarNavSubItem,
   SidebarBrand,
   SidebarUser,
+  SidebarUserMenuItem,
 } from './components/Sidebar'
 export { Resizable } from './components/Resizable'
 export type { ResizableProps } from './components/Resizable'

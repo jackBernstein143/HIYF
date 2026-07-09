@@ -18,12 +18,20 @@ import {
   SidebarInset,
   SidebarTrigger,
   SidebarRail,
+  useSidebar,
 } from "./ui/sidebar"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 import { TooltipProvider } from "./ui/tooltip"
 
 /**
@@ -35,7 +43,8 @@ import { TooltipProvider } from "./ui/tooltip"
  *   - items take an `icon`, can be `active`, and may nest `items` to become a
  *     collapsible sub-menu (chevron expands an indented list).
  *   - optional `brand` header (icon + title + subtitle) and `user` footer
- *     (avatar + name + email), both of which also collapse to their icon.
+ *     (avatar + name + email + optional menu), both of which also collapse to
+ *     their icon.
  *   - `children` is the main inset content; it gets a header with the trigger.
  *   - No `className`/`style` escape hatch. Need badges or actions? Add typed
  *     fields to SidebarNavItem here.
@@ -70,10 +79,18 @@ export interface SidebarBrand {
   subtitle?: string
 }
 
+export interface SidebarUserMenuItem {
+  label: string
+  tone?: "default" | "danger"
+  onSelect?: () => void
+  separatorBefore?: boolean
+}
+
 export interface SidebarUser {
   name: string
   email?: string
   avatar?: React.ReactNode
+  menuItems?: SidebarUserMenuItem[]
 }
 
 export interface SidebarProps {
@@ -98,6 +115,24 @@ function Chevron() {
       aria-hidden="true"
     >
       <path d="m9 18 6-6-6-6" />
+    </svg>
+  )
+}
+
+function ChevronsUpDown() {
+  return (
+    <svg
+      className="ml-auto size-4 shrink-0 text-sidebar-foreground/60"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m7 15 5 5 5-5" />
+      <path d="m7 9 5-5 5 5" />
     </svg>
   )
 }
@@ -151,6 +186,81 @@ function NavItem({ item }: { item: SidebarNavItem }) {
   )
 }
 
+const UserMenuButton = React.forwardRef<
+  React.ComponentRef<typeof SidebarMenuButton>,
+  React.ComponentProps<typeof SidebarMenuButton> & {
+    user: SidebarUser
+    showChevron?: boolean
+  }
+>(function UserMenuButton({ user, showChevron, ...props }, ref) {
+  return (
+    <SidebarMenuButton ref={ref} size="lg" {...props}>
+      {user.avatar && (
+        <div className="size-8 shrink-0 overflow-hidden rounded-lg">
+          {user.avatar}
+        </div>
+      )}
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-semibold">{user.name}</span>
+        {user.email && (
+          <span className="truncate text-xs text-sidebar-foreground/70">
+            {user.email}
+          </span>
+        )}
+      </div>
+      {showChevron && <ChevronsUpDown />}
+    </SidebarMenuButton>
+  )
+})
+
+function UserFooter({ user }: { user: SidebarUser }) {
+  const { isMobile } = useSidebar()
+  const menuItems = user.menuItems ?? []
+
+  if (menuItems.length === 0) {
+    return (
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <UserMenuButton user={user} />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    )
+  }
+
+  return (
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <UserMenuButton user={user} showChevron />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side={isMobile ? "bottom" : "right"}
+              align="end"
+              sideOffset={4}
+            >
+              {menuItems.map((item, index) => (
+                <React.Fragment key={index}>
+                  {item.separatorBefore && <DropdownMenuSeparator />}
+                  <DropdownMenuItem
+                    variant={item.tone === "danger" ? "destructive" : "default"}
+                    onSelect={item.onSelect}
+                  >
+                    {item.label}
+                  </DropdownMenuItem>
+                </React.Fragment>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  )
+}
+
 export function Sidebar({ groups, brand, user, children }: SidebarProps) {
   return (
     // The icon-rail tooltips on SidebarMenuButton need a TooltipProvider; this
@@ -198,29 +308,7 @@ export function Sidebar({ groups, brand, user, children }: SidebarProps) {
           ))}
         </SidebarContent>
 
-        {user && (
-          <SidebarFooter>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size="lg">
-                  {user.avatar && (
-                    <div className="size-8 shrink-0 overflow-hidden rounded-lg">
-                      {user.avatar}
-                    </div>
-                  )}
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user.name}</span>
-                    {user.email && (
-                      <span className="truncate text-xs text-sidebar-foreground/70">
-                        {user.email}
-                      </span>
-                    )}
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        )}
+        {user && <UserFooter user={user} />}
 
         <SidebarRail />
       </SidebarPrimitive>
