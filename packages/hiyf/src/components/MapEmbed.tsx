@@ -105,7 +105,7 @@ function AerialEmbed({
       rel="noreferrer"
       title={title}
       aria-label={`${title} — open satellite view`}
-      className="relative block w-full overflow-hidden rounded-lg bg-muted"
+      className="relative block w-full shrink-0 overflow-hidden rounded-lg bg-muted"
       style={{ height: AERIAL_HEIGHT }}
     >
       <div className="absolute left-1/2 top-1/2">
@@ -167,7 +167,7 @@ export function MapEmbed({
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`
 
   return (
-    <div className="w-full overflow-hidden rounded-lg bg-muted">
+    <div className="w-full shrink-0 overflow-hidden rounded-lg bg-muted">
       <AspectRatioPrimitive ratio={16 / 9}>
         <iframe
           src={src}
