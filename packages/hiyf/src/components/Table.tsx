@@ -17,6 +17,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
+import { Tooltip } from './Tooltip'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { InformationCircleIcon } from '@hugeicons/core-free-icons'
 
 /**
  * Table — a closed generic data table wrapper over shadcn's Table primitive family.
@@ -62,6 +65,8 @@ export interface TableColumn<T> {
   filterValue?: string
   /** Called when a filter option is selected. */
   onFilterChange?: (value: string) => void
+  /** Optional explanatory text shown in a hover tooltip via an info icon next to the header. */
+  headerInfo?: string
   /**
    * Optional custom renderer for this column's cell.
    * Receives the full row object and returns a React node.
@@ -237,14 +242,21 @@ function HeaderContent<T>({
   const hasMenu =
     column.sortable || (column.filterOptions && column.filterOptions.length > 0)
 
-  if (!hasMenu) {
+  if (!hasMenu && !column.headerInfo) {
     return <>{column.header}</>
   }
 
   return (
     <div className={`flex items-center gap-1 ${HEADER_FLEX_CLASS[column.align ?? 'left']}`}>
       <span>{column.header}</span>
-      <HeaderMenu column={column} sort={sort} onSortChange={onSortChange} />
+      {column.headerInfo ? (
+        <Tooltip content={column.headerInfo}>
+          <span className="inline-flex cursor-help text-muted-foreground/70 transition-colors hover:text-foreground">
+            <HugeiconsIcon icon={InformationCircleIcon} size={14} />
+          </span>
+        </Tooltip>
+      ) : null}
+      {hasMenu ? <HeaderMenu column={column} sort={sort} onSortChange={onSortChange} /> : null}
     </div>
   )
 }

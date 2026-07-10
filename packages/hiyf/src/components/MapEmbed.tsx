@@ -6,10 +6,12 @@ import { AspectRatio as AspectRatioPrimitive } from './ui/aspect-ratio'
  * Raw <iframe> map embeds are an off-system escape hatch: every provider URL,
  * viewport shape, loading behavior, and frame treatment would be up for grabs.
  * This wrapper closes it:
- *   - Location is expressed only as decimal latitude/longitude with an
- *     enumerated map view and clamped zoom.
+ *   - Location is expressed only as decimal latitude/longitude with a
+ *     clamped zoom.
  *   - The embed always uses the approved responsive 16:9 frame, rounded
- *     corners, muted loading surface, and Google Maps embed URL.
+ *     corners, muted loading surface, and a keyless OpenStreetMap embed with
+ *     a marker pin — reliable for every coordinate (Google's keyless embed is
+ *     deprecated and renders inconsistently).
  *   - NO `className`/`style` escape hatch. Need a new map affordance? Add it
  *     here so every map stays on-system.
  */
@@ -19,10 +21,8 @@ export interface MapEmbedProps {
   lat: number
   /** Longitude in decimal degrees. */
   lon: number
-  /** Zoom level 1-21. Defaults to 14. */
+  /** Zoom level 1-21. Defaults to 14. Controls the size of the map window. */
   zoom?: number
-  /** 'satellite' (default) or 'map'. */
-  view?: 'map' | 'satellite'
   /** Accessible title for the embed. Defaults to 'Map'. */
   title?: string
 }
@@ -32,7 +32,6 @@ export function MapEmbed({
   lat,
   lon,
   zoom = 14,
-  view = 'satellite',
   title = 'Map',
 }: MapEmbedProps) {
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
@@ -41,7 +40,10 @@ export function MapEmbed({
 
   const zoomValue = Number.isNaN(zoom) ? 14 : zoom
   const clampedZoom = Math.min(21, Math.max(1, zoomValue))
-  const src = `https://maps.google.com/maps?ll=${lat},${lon}&q=${lat},${lon}&z=${clampedZoom}&t=${view === 'map' ? 'm' : 'k'}&output=embed`
+  // Half-window in degrees for the bounding box; smaller as zoom increases.
+  const half = Math.min(20, Math.max(0.004, 40 / 2 ** clampedZoom))
+  const bbox = `${lon - half},${lat - half},${lon + half},${lat + half}`
+  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`
 
   return (
     <div className="w-full overflow-hidden rounded-lg bg-muted">
