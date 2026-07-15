@@ -216,7 +216,10 @@ function HeaderMenu<T>({
           )}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      {/* w-auto: the shared content style pins width to the trigger — here that's the tiny
+          chevron button, which would clamp the menu to its 128px minimum and clip labels.
+          A header menu sizes to its widest label instead (with a sane ceiling). */}
+      <DropdownMenuContent align="end" className="w-auto max-w-80">
         {column.sortable && (
           <>
             <DropdownMenuItem
