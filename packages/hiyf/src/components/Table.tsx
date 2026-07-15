@@ -65,6 +65,17 @@ export interface TableColumn<T> {
   filterValue?: string
   /** Called when a filter option is selected. */
   onFilterChange?: (value: string) => void
+  /**
+   * Multi-select filter mode: the currently selected option values. When provided
+   * (with onFilterValuesChange), the header menu renders filterOptions as toggling
+   * check items that DON'T close the menu, so several can be selected in one visit.
+   * There is no "all" convention in this mode — an empty array means unfiltered, and
+   * a "Clear" item appears whenever anything is selected. Mutually exclusive with
+   * filterValue/onFilterChange single-select mode.
+   */
+  filterValues?: string[]
+  /** Called with the full updated selection whenever a multi-select option is toggled. */
+  onFilterValuesChange?: (values: string[]) => void
   /** Optional explanatory text shown in a hover tooltip via an info icon next to the header. */
   headerInfo?: string
   /**
@@ -170,12 +181,21 @@ function HeaderMenu<T>({
   onSortChange?: (sort: TableSort) => void
 }) {
   const activeSort = sort?.key === column.key ? sort : undefined
+  const multi = column.filterValues !== undefined
   const firstFilterValue = column.filterOptions?.[0]?.value
-  const filterActive =
-    column.filterValue !== undefined &&
-    firstFilterValue !== undefined &&
-    column.filterValue !== firstFilterValue
+  const filterActive = multi
+    ? (column.filterValues?.length ?? 0) > 0
+    : column.filterValue !== undefined &&
+      firstFilterValue !== undefined &&
+      column.filterValue !== firstFilterValue
   const active = Boolean(activeSort) || filterActive
+
+  const toggleValue = (value: string) => {
+    const cur = column.filterValues ?? []
+    column.onFilterValuesChange?.(
+      cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value],
+    )
+  }
 
   return (
     <DropdownMenu>
@@ -216,15 +236,39 @@ function HeaderMenu<T>({
         {column.sortable && column.filterOptions && column.filterOptions.length > 0 && (
           <DropdownMenuSeparator />
         )}
-        {column.filterOptions?.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onSelect={() => column.onFilterChange?.(option.value)}
-          >
-            <CheckGlyph visible={column.filterValue === option.value} />
-            {option.label}
-          </DropdownMenuItem>
-        ))}
+        {column.filterOptions?.map((option) =>
+          multi ? (
+            // Multi-select: toggling keeps the menu open so several values can be
+            // picked in one visit (preventDefault stops Radix's close-on-select).
+            <DropdownMenuItem
+              key={option.value}
+              onSelect={(event) => {
+                event.preventDefault()
+                toggleValue(option.value)
+              }}
+            >
+              <CheckGlyph visible={(column.filterValues ?? []).includes(option.value)} />
+              {option.label}
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              key={option.value}
+              onSelect={() => column.onFilterChange?.(option.value)}
+            >
+              <CheckGlyph visible={column.filterValue === option.value} />
+              {option.label}
+            </DropdownMenuItem>
+          ),
+        )}
+        {multi && (column.filterValues?.length ?? 0) > 0 ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => column.onFilterValuesChange?.([])}>
+              <CheckGlyph visible={false} />
+              Clear
+            </DropdownMenuItem>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   )
