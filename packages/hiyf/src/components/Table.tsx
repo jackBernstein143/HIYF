@@ -240,8 +240,10 @@ function HeaderMenu<T>({
           multi ? (
             // Multi-select: toggling keeps the menu open so several values can be
             // picked in one visit (preventDefault stops Radix's close-on-select).
+            // whitespace-nowrap: a filter label is a name — it widens the menu, never wraps.
             <DropdownMenuItem
               key={option.value}
+              className="whitespace-nowrap"
               onSelect={(event) => {
                 event.preventDefault()
                 toggleValue(option.value)
@@ -253,6 +255,7 @@ function HeaderMenu<T>({
           ) : (
             <DropdownMenuItem
               key={option.value}
+              className="whitespace-nowrap"
               onSelect={() => column.onFilterChange?.(option.value)}
             >
               <CheckGlyph visible={column.filterValue === option.value} />
