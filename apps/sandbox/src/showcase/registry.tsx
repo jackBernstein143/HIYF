@@ -618,35 +618,69 @@ const ScrollAreaDemo: FC = () => (
   </Box>
 )
 
-type TableRow = { name: string; role: string; status: string }
+type TableRow = { name: string; role: string; status: string; tags: string }
 const TABLE_DATA: TableRow[] = [
-  { name: 'Alice', role: 'Engineer', status: 'Active' },
-  { name: 'Bob', role: 'Designer', status: 'Inactive' },
-  { name: 'Carol', role: 'PM', status: 'Active' },
+  { name: 'Alice', role: 'Engineer', status: 'Active', tags: 'industrial-brownfield' },
+  { name: 'Bob', role: 'Designer', status: 'Inactive', tags: 'off-market' },
+  { name: 'Carol', role: 'PM', status: 'Active', tags: 'industrial-candidate' },
 ]
 
-const TableDemo: FC = () => (
-  <Box className="w-full max-w-lg">
-    <Table<TableRow>
-      columns={[
-        { key: 'name', header: 'Name' },
-        { key: 'role', header: 'Role' },
-        {
-          key: 'status',
-          header: 'Status',
-          align: 'right',
-          render: (row) => (
-            <Status color={row.status === 'Active' ? 'success' : 'neutral'}>
-              {row.status}
-            </Status>
-          ),
-        },
-      ]}
-      data={TABLE_DATA}
-      caption="Team members"
-    />
-  </Box>
-)
+// Exercises both filter modes: single-select (Role) and multi-select with long
+// labels (Tags) — the header menu must widen to fit labels, never wrap or clip them.
+const TableDemo: FC = () => {
+  const [roleFilter, setRoleFilter] = useState('all')
+  const [tagFilter, setTagFilter] = useState<string[]>([])
+  const rows = TABLE_DATA.filter(
+    (r) =>
+      (roleFilter === 'all' || r.role === roleFilter) &&
+      (tagFilter.length === 0 || tagFilter.includes(r.tags)),
+  )
+  return (
+    <Box className="w-full max-w-lg">
+      <Table<TableRow>
+        columns={[
+          { key: 'name', header: 'Name' },
+          {
+            key: 'role',
+            header: 'Role',
+            filterOptions: [
+              { value: 'all', label: 'All roles' },
+              { value: 'Engineer', label: 'Engineer' },
+              { value: 'Designer', label: 'Designer' },
+              { value: 'PM', label: 'PM' },
+            ],
+            filterValue: roleFilter,
+            onFilterChange: setRoleFilter,
+          },
+          {
+            key: 'tags',
+            header: 'Tags',
+            filterOptions: [
+              'industrial-brownfield',
+              'industrial-candidate',
+              'rights expiring soon',
+              'off-market',
+            ].map((value) => ({ value, label: value })),
+            filterValues: tagFilter,
+            onFilterValuesChange: setTagFilter,
+          },
+          {
+            key: 'status',
+            header: 'Status',
+            align: 'right',
+            render: (row) => (
+              <Status color={row.status === 'Active' ? 'success' : 'neutral'}>
+                {row.status}
+              </Status>
+            ),
+          },
+        ]}
+        data={rows}
+        caption="Team members"
+      />
+    </Box>
+  )
+}
 
 const CarouselDemo: FC = () => (
   <Box className="w-full max-w-sm">
